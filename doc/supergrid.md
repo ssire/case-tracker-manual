@@ -1,0 +1,307 @@
+# Supergrid
+
+Supergrid transforms a formular definition into a formular template. 
+
+The formular definition is an XML file that uses an XML vocabulary to create forms with basic editing constraints on a grid-based layout. 
+
+The formular template is an XTiger template that contains extension points to dynamically generate some data dependent input fields (e.g. a list of registered user names, etc.). 
+
+The formular template can be embedded into any web page using a javascript library, called AXEL, that will turn it into an active editor that we call a supergrid form.
+
+A particularity of supergrid forms is that they output XML documents conformant with an implicit XML model embedded into the initial formular definition.
+
+The exemple below shows a very basic formular specification with two single line text entry fields. The second field is mandatory.
+
+    <Form Tag="Name">
+      <Row>
+        <Field Key="fn-name" Tag="FirstName" Gap="2" W="6">First name</Field>
+        <Field Key="ln-name" Tag="LastName" Gap="2" W="6">Last name</Field>
+      </Row>
+      <Bindings>
+        <Require Keys="ln-name"/>
+      </Bindings>
+      <Plugins>
+        <Input Keys="fn-name ln-name"/>
+      </Plugins>
+    </Form>
+
+This form visualized in the Supergrid simulator tool is shown below. As you can see the second field is mandatory and validation outputs validation error messages. The validation output message container is fully configurable when you embed your form into a page. 
+
+![Basic form sample](../images/supergrid/form-sample1.png "Basic form sample")
+
+This form generates output such as :
+
+    <Name>
+      <FirstName>John</FirstName>
+      <LastName>Doe</LastName>
+    </Name>
+    
+Practically the formular definition must be mounted on a specific URL that return its XML content for supergrid to find it and generate the formular template. By convention we use a `/form/name` URL for that purpose; the pre-generated formular template is available under a `templates/name.xhtml` URL.
+
+Formular templates generated with Supergrid can be rendered in 3 different modes : a read-only presentation mode, an update mode to update existing data and a create mode to create new data. This is indicated with a request *goal* parameter (resp. *read*, *update* or *create*) of the formular template URL. This allows to use a single formular definition for multiple purposes.
+
+## XML Language Characteristics
+
+The Supergrid language abstracts three languages : Oppidum mesh language, XTiger language and a grid layout language. As a consequence formular specifications are easier to read and shorter because they are written with a specific and limited XML vocabulary.
+
+The Supergrid language can also embed any markup : everything not in Supergrid vocabulary will be recursively copied to the output. This way it is possible to integrate specific HTML elements directly into the formular specification. But you can also use that feature to directly embed XTiger XML elements.
+
+The grid and final look-and-feel of the forms is actually implemented with Bootstrap 2.3.2 CSS framework. This can be adapted by updating the Supergrid XSLT transformation and providing the adequate CSS files.
+
+### The Oppidum Mesh Language
+
+The mesh elements are identified with the _site:_ prefix bound to the "http://oppidoc.com/oppidum/site" namespace. The mesh language specifies conditional blocks and extension points which are rendered dynamically by epilogue.xql. The conditions depends on the HTTP request parameters. The extension points are copied from the view output of the Oppidum pipeline. 
+
+One of the benefit of using supergrid is that the extension points can be rendered for different purposes like generating different templates to create, update or read a resource. In the later case, the epilogue rendering function dynamically replaces the extension points with constant fields. Thus a unique formular source can be used for editing or for viewing data. There is no need to maintain for instance an XTiger XML template for creating a resource, another one for updating a resource and an XSLT transformation for viewing it.
+
+### The XTiger Language
+
+The XTiger XML elements are identified with the _xt:_ prefix bound to the "http://ns.inria.org/xtiger" namespace.
+
+The XTiger language specification is available [online](http://ssire.github.io/xtiger-xml-spec/). Unless you need to edit specific XML constructs with your form, you do not need to directly use the XTiger language inside a forms specification.
+
+## Architecture overview
+
+Supergrid transforms a formular specification written in XML into an XHTML document which is both :
+
+* an Oppidum mesh document template containing *holes* (or extension points) to be filled later
+* an XTiger XHTML document template skeleton to be turned into a web-base formular by the AXEL library client-side
+
+The Supergrid XSLT transformation is applied once at deployment time (usually as a *forms* target of a deploy script). Its XHTML document output is copied to the application mesh collection.
+
+The formular to render inside an HTML page is retrieved via an Ajax HTTP request (usually at a *templates/{name}* URL address). 
+
+It returns an XTiger XHTML document template obtained by filling the extension points of the Oppidum mesh with concrete XTiger elements that instiate different kind of input fieds (drop down selection lists, calendar, single line text input, multiple lines text input, photo upload, etc.). That step allows to dynamically generate input fields, like dynamical list of entities generated from the latest database content. 
+
+The XTiger template is itself turned into an editor by the AXEL javascript library client-side. 
+
+The Oppidum pipeline that turns the Oppidum mesh into an XTiger template is a two steps pipeline with a model and an epilogue (no view).
+
+By convention the model is called _form.xql_. It is common practice to serve several formular models from a single _form.xql_ file mostly to factorize input fields (e.g. a country list, NOGA classification, etc.). It is also common to create a _form.xqm_ library per application, with helper functions to generate classical types of input fields (i.e. drop-down list selectors).
+
+Finally a filtering mechanism allows the model and the epilogue script to decide at the last minute to replace all the input fields by read-only fields. This is convenient to reuse a single formular definition not only for editing but also for viewing data without allowing editing. This filtering is usually driven by *goal* parameter passed to the formular HTTP request which is set to *read* for a read-only formular, and respectively to *update* or *create* for an update or creation formular.
+
+This is illustrated on the figure below.
+
+![Supergrid architecture overview](../images/supergrid/supergrid.png "Supergrid architecture overview")
+
+## Usage
+
+### Installation
+
+To install the Supergrid tool you need to copy the supergrid module into you application code modules (usually into `modules/formulars`). With the adequate application mapping configuration you will get a basic GUI for testing and generating the formulars called the _Supergrid simulator_. You will also get some install functions that you can use to create deployment scripts.
+
+To test and use forms generated with Supergrid you also need to include the CSS rules for your grid layout, look-and-feel and forms widgets into your application, and the eventual associated javascript files too. This is the purpose of the _forms.css_ CSS file. In general it contains rules to overwrite specific underlying grid layout rules or default AXEL rules, but also rules to implement higher level widgets. The _forms.js_ file is the implementation of the Supergrid simulator. 
+
+### Supergrid simulator
+
+TBD
+
+### Epilogue 
+
+Explaing site:field function into epilogue.xql
+
+
+### Form integration into a web page
+
+Explain : 
+
+<Formular Width="680px" Submission="persons/submission?name=SearchCoachesRequest">
+  <Commands>
+    <Save Target="editor" data-src="match/criteria" data-type="json" data-replace-type="event" 
+      data-save-flags="disableOnSave silentErrors" onclick="javascript:$('#c-busy').show();$('#c-req-ready').hide();">
+    <Label style="min-width: 150px">Search</Label>
+  </Save>
+  </Commands>
+</Formular
+
+Using XSLT you 
+
+
+
+### Extension
+
+You can plug an play extensions into Supergrid. You can create new vocabulary elements for all the categories of a supergrid form components (bindings, plugins, modal windows). They consist of XSLT template rules matching those elemnt names and invoked from the proper context of the main Supergrid transformation. For that purpose you can include the extension at the begining of the Supergrid XSLT file. Usually extensions are bound to a new XML element name (e.g. the _tabular.xsl_ extension to create cross-product table from two selectors lists with the `ProductTable` element).
+
+
+## XML Language Specification
+
+### The `Form` element
+
+> Contained in: document root
+>
+> Contains: Verbatim, Title, Row, Separator, Include, site:conditional, Modals, Commands, Bindings, Plugins, Hints
+
+The `Form` element is the document root of a supergrid formular definition. 
+
+Mandatory attributes :
+
+* `@Tag` specifies the name of the root element of the XML output of the formular
+
+Optional attributes :
+
+* `@StartLevel` specifies the starting level for all the `Title` elements, for instance  when set to 1 a *Title* (w/o extra *Level* attribute) will be rendered by a `h1` element
+* `@Width` specifies the desired width for generating the formular in the Supergrid simulator, note this is not necessarily the width that will be used in the application which is depending of the container
+
+
+In addition you can specify namespaces used in the formular definition as in the next example :
+
+    <Form Tag="Information" StartLevel="1" Width="800px"
+      xmlns:site="http://oppidoc.com/oppidum/site"
+      xmlns:xt="http://ns.inria.org/xtiger">
+  
+### The `Verbatim` element
+
+> Contained in: Form
+>
+> Contains: one or more xt:component XTiger component definitions
+
+The `Verbatim` element allows to generate a verbatim block in the `xt:head` section of the generated template. 
+
+This is used to generate explicit XTiger components that you can later on instantiate into your grid layout with the `Use` element.
+
+Note that the XTiger components (e.g. `xt:component` elements) may contain any markup or Supergrid markup. 
+ 
+### The `Row` element
+
+> Contained in: Form, Cell
+>
+> Contains: any element (most likely Field)
+
+A `Row` element stacks one or more `Field` elements in lines of a maximum 12 grid unit width and with a fixed left margin (usually *15px*). The left margin allows to create grid gutters in regular layouts (e.g. each line containing two 6 grid units width fields). Each new Row element starts with a zero left margin.
+
+The field placement algorithm in a row works as follows: if there are enough grid units available to contain the full field in the current line, then the field is inserted into the line, otherwise a new line is created that starts with the field. Note that except on the first line which has no left margin set, you must explicitely set the left margin to 0 on a new field on a new line using the `L="0"` attribute of the `Field` element. Alternatively you can also use a new `Row` element each time you want to create a line. This more explicit version is more verbose.
+
+
+### The `Separator` element
+
+> Contained in: `Form`
+
+The `Separator` draws a horizontal separation line
+
+### The `Cell` element
+
+> Contained in: Row
+>
+> Contains: (Title | SideLink), any element (most likely Field or Row)
+
+The `Cell` element content area uses fluid layout, so that means it will change the grid unit into its content so that 12 units correspond to 100% of the width of the cell content.
+
+### The `Field` element
+
+The `Field` element is the placeholder for a label followed by a data entry field.
+
+The label is the text content of the element or a dictionary key if you use a `loc` attribute for internationalization. 
+
+The nature of the data entry field is determined either by : 
+
+- an input field in the *Plugins* section, it is statically generated once during form installation
+- a`<site:field Key="...">` extension point generated by formular`s `form.xql` model, it is dynamically generated at each formular template generation
+
+Mandatory attributes :
+
+* `@Key` key to identify the field, note that the key may bot be unique in a given formular to share some declarations
+
+Optional attributes :
+
+* `@Label` to generate the correponding markup element in the XML output model
+* `@Gap` : horizontal space left for label in grid units (0 means on top of data entry field)
+* `@W` : total horizontal space occupied by the field in grid units (12 maximum)
+* `@L` : left margin (usually set to 0 when vertically staking fields w/o wrapping them into rows)
+
+### The `Modals` section element
+
+#### The `Modal` element
+
+The `Modal` element defines a modal window that loads an XTiger template.
+
+The mandatory `@Id` attribute defines the modal identifier which is defined as _{@Id}-modal_. The identifier itself is used for identifying the editor generated inside the modal.
+
+The modal window is actually implemented with a bootstrap modal (a header, a body and a footer).
+
+The header displays a title configured with the `Title` element. By default it displays a cross to dismiss the modal window without performing any action. You can eventually remove the cross by adding a `@Dimiss="none"` attribute.
+
+The body contains a pre-configured editor with a _transform_ command initialized with the template specified in the `@Template` attribute.
+
+The `Footer` element defines the commands to display in the footer of the modal window.
+
+If there is no `Footer` element the footer contains a Save and a Cancel buttons.
+
+The Save button defines a _save_ command. The command will also duplicate save related events on the element targeted by the optional `@EventTarget` attribute. The optional `@SaveLabel` attribute can be used to change the label of the default Save button.
+
+The Cancel button defines a _trigger_ command that sends an `axel-cancel-edit` event on the editor contained inside the modal.
+
+### The `Commands` section element
+
+> Contains: Add, Augment
+
+TBD
+
+### The `Bindings` section element
+
+> Contains: Require, Enforce (RegExp)
+
+The `Require` element makes an input field mandatory
+
+The `Enforce` section declares some contraints elements. Actually there is only a `RegExp` constraint.
+
+### The `Plugins` section element
+
+> Contains: Constant, Date, Input, MultiText, Photo, Plain, RichText, Text
+
+The `Plugins` section declares basic editing widgets. Each widget MUST BE associated with one or more `Field` instances of the formular, either through a *Key* or by the means of a *Prefix*. 
+
+Most of the widgets are implemented by an AXEL plugin rendered with a single XTiger `xt:use` element. A few ones may also be complete higher level reusable XTiger components that will be copied to the formular inside one or more XTigger `xt:component` elements.
+
+#### The `Constant` widget
+
+The `Constant` element renders read-only content of different nature depending on the value of its *Media* attribute : 
+
+- `@Media="html"` : displays an XHTML blob using AXEL 'html' plugin (XML input in that case is usually generated by the XSLT blender)
+- `@Media="image"` : displays an image using AXEL 'constant' plugin
+  -  the image URL will be obtained by concatanating `$xslt.base-url` with the optional `@Base` relative path that you can declare on the *Constant* element and the XML input
+  - in case of empty XML input it will show `{$xslt.base-url}static/cctracker/images/identity.png`
+  - set the `img-polaroid` class on the HTML `img` tag
+
+#### The `Date` widget
+
+TBD
+
+#### The `Input` widget
+
+TBD
+
+#### The `MultiText` widget
+
+TBD
+
+#### The `Photo` widget
+
+TBD
+
+#### The `Plain` widget
+
+The `Plain` element implements different types of editors depending on the value of its *Type* attribute :
+
+- @Type="constant" :  
+- @Type="text" :  
+- @Type="number" :  
+
+TBD
+
+#### The `RichText` editor
+
+The `RichText` element generated a complete XTiger component for editing rich text (paragraphs, lists, etc.).
+
+TBD
+
+#### The `Text` widget
+
+The `RichText` element generated a complete XTiger component for editing rich text (paragraphs, lists, etc.).
+
+TBD
+
+### The `Hints` section element
+
+TBD
+
