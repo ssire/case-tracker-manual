@@ -12,18 +12,20 @@ A particularity of supergrid forms is that they output XML documents conformant 
 
 The exemple below shows a very basic formular specification with two single line text entry fields. The second field is mandatory.
 
-    <Form Tag="Name">
-      <Row>
-        <Field Key="fn-name" Tag="FirstName" Gap="2" W="6">First name</Field>
-        <Field Key="ln-name" Tag="LastName" Gap="2" W="6">Last name</Field>
-      </Row>
-      <Bindings>
-        <Require Keys="ln-name"/>
-      </Bindings>
-      <Plugins>
-        <Input Keys="fn-name ln-name"/>
-      </Plugins>
-    </Form>
+```xml
+<Form Tag="Name">
+  <Row>
+    <Field Key="fn-name" Tag="FirstName" Gap="2" W="6">First name</Field>
+    <Field Key="ln-name" Tag="LastName" Gap="2" W="6">Last name</Field>
+  </Row>
+  <Bindings>
+    <Require Keys="ln-name"/>
+  </Bindings>
+  <Plugins>
+    <Input Keys="fn-name ln-name"/>
+  </Plugins>
+</Form>
+```
 
 This form visualized in the Supergrid simulator tool is shown below. As you can see the second field is mandatory and validation outputs validation error messages. The validation output message container is fully configurable when you embed your form into a page. 
 
@@ -160,7 +162,7 @@ The *Install* button runs the form model through a complete supergrid transforma
 
 The *Install all* button is the same as the *Install* button but it installs all the forms defined in the `formulars/_register.xml` file. 
 
-Thhe rights to use the installation buttons depends on the access rules configured in the application mapping (see [Supergrid Installation](#supergrid-installation)).
+The rights to use the installation buttons depends on the access rules configured in the application mapping as explained in [Supergrid installation](#supergrid-installation).
 
 ### New formular installation
 
@@ -169,7 +171,7 @@ Each formular requires to map 2 resources in the application mapping :
 - the formular XML definition to allow the Supergrid simulator to generate and record the pre-generated template
 - the formular template to allow to serve a template file ready for transformation by the AXEL Javascript library client side to create an editor
 
-The generic `<item resource="file:///formulars/$2.xml"/>` mapping entry (see [Supergrid Installation](#supergrid-installation) works for all the formular XML definition files, hence you do not need to create one entry per file. However you need to create one mapping entry per formular template as explained below.
+The generic `<item resource="file:///formulars/$2.xml"/>` mapping entry decalred in [Supergrid Installation](#supergrid-installation) works for all the formular XML definition files, hence you do not need to create one entry per file. However you still need to create one mapping entry per formular template as explained below.
 
 Each formular XML definition file must be available in your application top-level *formulars* directory. Then it must be registered in the `formulars/_register.xml` file as a *Formular* element like :
 
