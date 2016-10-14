@@ -160,11 +160,16 @@ The *Install* button runs the form model through a complete supergrid transforma
 
 The *Install all* button is the same as the *Install* button but it installs all the forms defined in the `formulars/_register.xml` file. 
 
-Users with enough access rights to install forms to the `mesh` collection is defined by an access rule in the mapping file of the application. For instance the following rule restricts this to the *admin* user :
-
-    <rule action="install" role="u:admin" message="system administrator"/>
+Thhe rights to use the installation buttons depends on the access rules configured in the application mapping (see [Supergrid Installation](#supergrid-installation)).
 
 ### New formular installation
+
+Each formular requires to map 2 resources in the application mapping :
+
+- the formular XML definition to allow the Supergrid simulator to generate and record the pre-generated template
+- the formular template to allow to serve a template file ready for transformation by the AXEL Javascript library client side to create an editor
+
+The generic `<item resource="file:///formulars/$2.xml"/>` mapping entry (see [Supergrid Installation](#supergrid-installation) works for all the formular XML definition files, hence you do not need to create one entry per file. However you need to create one mapping entry per formular template as explained below.
 
 Each formular XML definition file must be available in your application top-level *formulars* directory. Then it must be registered in the `formulars/_register.xml` file as a *Formular* element like :
 
@@ -176,13 +181,13 @@ Each formular XML definition file must be available in your application top-leve
 
 The `Name` element is the label that will appear in the Supergrid simulator menu option.
 
-The `Form` element is the URL of the resource that will serve the formular XML definition file to Supergrid simulator. Since it will be server by the `<item resource="file:///formulars/$2.xml"/>` mapping entry (see [Supergrid Installation](#supergrid-installation) above) it must ends with the name of the formular XML definition file with no suffix *xml*.
+The `Form` element is the URL of the resource that will serve the formular XML definition file to Supergrid simulator. Since it will be server by the ) it must ends with the name of the formular XML definition file with no suffix *xml*.
 
 The optional `Template` element is the name of the formular resource that will serve the complete XTiger formular to the AXEL Javascript library for client-side transformation to an editor.
 
-You need to create a corresponding entry in your application mapping file. This entry is necessary to declare the pipeline for generating the `site:field` extension points with a `form.xql` model. So for instance if you have a *persons* module with a formular *persons-search* mapped onto the `/templates/search/persons` URL (as declared in the *Formular* element above) you should also add the following entries to the application mapping :
+You need to create a corresponding entry in your application mapping file. By convention this entry declares a pipeline for generating the `site:field` extension points with a `form.xql` model to be inserted into the pre-generated formular template mesh to generate the dynamical formular template. So for instance if you have a *persons* module with a formular *persons-search* mapped onto the `/templates/search/persons` URL (as declared in the *Formular* element above) you should also add the following entries to the application mapping :
 
-    <item name="templates" collection="templates">
+    <item name="templates">
       <item name="search">
         <item name="persons" epilogue="persons-search.xhtml">
           <model src="modules/persons/form.xql"/>
@@ -191,13 +196,11 @@ You need to create a corresponding entry in your application mapping file. This 
       ...
     </item>
     
-It will use the precise *persons-search.xhtml* mesh that will be generated and recorded to the `mesh` collection by the *Install* button of the Supergrid simulator.
-
-By default when `Template` is missing it is assumed to be mapped onto the `/templates/name` URL where name is the name of the formular XML definition file with no suffix *xml*. You still need to explicitely declare the corresponding template resource in the application mapping.
+If `Template` is missing it is assumed to be mapped onto the `/templates/name` URL where name is the name of the formular XML definition file with no suffix *xml*. You still need to explicitly declare the corresponding mapping entry in the application mapping.
 
 ### Epilogue 
 
-To understand the role of the `site:field` function of the `epilogue.xql` script let's consider a formular XML definition file with a field identified with a *country* key :
+To understand the role of the *site:field* function of the `epilogue.xql` script let's consider a formular XML definition file with a field identified with a *country* key :
 
     <Field Key="country" Tag="Country" Gap="1">Country</Field>
 
