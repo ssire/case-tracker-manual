@@ -33,11 +33,13 @@ This form visualized in the Supergrid simulator tool is shown below. As you can 
 
 This form generates output such as :
 
-    <Name>
-      <FirstName>John</FirstName>
-      <LastName>Doe</LastName>
-    </Name>
-    
+```xml
+<Name>
+  <FirstName>John</FirstName>
+  <LastName>Doe</LastName>
+</Name>
+```
+
 Practically the formular definition must be mapped to a specific URL that return its XML content for supergrid to find it and generate the formular template. By convention we use a `/form/name` URL for that purpose; the pre-generated formular template is available under a `templates/name.xhtml` URL.
 
 Formular templates generated with Supergrid can be rendered in 3 different modes : a read-only presentation mode, an update mode to update existing data and a create mode to create new data. This is indicated with a request *goal* parameter (resp. *read*, *update* or *create*) of the formular template URL. This allows to use a single formular definition for multiple purposes.
@@ -93,34 +95,38 @@ This is illustrated on the figure below.
 
 To install Supergrid formulars and the simulator you need to copy the `modules/formulars` directory to your application. Then you need to copy this entry to your application mapping file to map it on the `/forms` URL :
 
-    <item name="forms" resource="file:///formulars/_register.xml" supported="install" epilogue="formulars">
-      <access>
-        <rule action="GET" role="u:admin g:admin-system" message="system administrator"/>
-        <rule action="install" role="u:admin" message="system administrator"/>
-      </access>
-      <view src="modules/formulars/simulator.xsl"/>
-      <item resource="file:///formulars/$2.xml"/>
-      <action name="install" resource="">
-        <model src="modules/formulars/install.xql"/>
-      </action>
-    </item>
+```xml
+<item name="forms" resource="file:///formulars/_register.xml" supported="install" epilogue="formulars">
+  <access>
+    <rule action="GET" role="u:admin g:admin-system" message="system administrator"/>
+    <rule action="install" role="u:admin" message="system administrator"/>
+  </access>
+  <view src="modules/formulars/simulator.xsl"/>
+  <item resource="file:///formulars/$2.xml"/>
+  <action name="install" resource="">
+    <model src="modules/formulars/install.xql"/>
+  </action>
+</item>
+```
 
 You can fine tune access rules to the Supergrid simulator with the `@role` attribute of the `rule` element.
 
 You also need to add the following skin to your application `config.skin.xml` file :
 
-    <profile name="formulars" type="mesh">
-      <link href="bootstrap/css/bootstrap.css"/>
-      <link href="css/site.css"/>
-      <link href="css/forms.css"/>
-      <predef avoid="error()">axel-1.3-no-jquery</predef>
-      <predef avoid="error()">date</predef>
-      <script src="bootstrap/js/bootstrap.min.js"/>
-      <predef>select2</predef>
-      <script src="lib/formulars.js"/>
-      <script src="lib/extensions.js"/>
-      <predef>photo</predef>
-    </profile>
+```xml
+<profile name="formulars" type="mesh">
+  <link href="bootstrap/css/bootstrap.css"/>
+  <link href="css/site.css"/>
+  <link href="css/forms.css"/>
+  <predef avoid="error()">axel-1.3-no-jquery</predef>
+  <predef avoid="error()">date</predef>
+  <script src="bootstrap/js/bootstrap.min.js"/>
+  <predef>select2</predef>
+  <script src="lib/formulars.js"/>
+  <script src="lib/extensions.js"/>
+  <predef>photo</predef>
+</profile>
+```
 
 Do not forget to make all the Javascript and CSS files from the skin available in your application *resources* folder on the file system.
 
@@ -144,7 +150,9 @@ The *Control* button runs the form model through a partial supergrid transformat
 
 For instance a field like :
 
-    <Field Key="likert-scale" Tag="RatingScaleRef" Gap="3" W="12">The top management ...</Field>
+```xml
+<Field Key="likert-scale" Tag="RatingScaleRef" Gap="3" W="12">The top management ...</Field>
+```
 
 Would appear as `likert-scale[RatingScaleRef,9]` with the *Control* transformation.
 
@@ -175,11 +183,13 @@ The generic `<item resource="file:///formulars/$2.xml"/>` mapping entry decalred
 
 Each formular XML definition file must be available in your application top-level *formulars* directory. Then it must be registered in the `formulars/_register.xml` file as a *Formular* element like :
 
-    <Formular>
-      <Name>Person (search)</Name>
-      <Form>forms/person-search</Form>
-      <Template>templates/search/persons</Template>
-    </Formular>
+```xml
+<Formular>
+  <Name>Person (search)</Name>
+  <Form>forms/person-search</Form>
+  <Template>templates/search/persons</Template>
+</Formular>
+```
 
 The `Name` element is the label that will appear in the Supergrid simulator menu option.
 
@@ -189,44 +199,54 @@ The optional `Template` element is the name of the formular resource that will s
 
 You need to create a corresponding entry in your application mapping file. By convention this entry declares a pipeline for generating the `site:field` extension points with a `form.xql` model to be inserted into the pre-generated formular template mesh to generate the dynamical formular template. So for instance if you have a *persons* module with a formular *persons-search* mapped onto the `/templates/search/persons` URL (as declared in the *Formular* element above) you should also add the following entries to the application mapping :
 
-    <item name="templates">
-      <item name="search">
-        <item name="persons" epilogue="persons-search.xhtml">
-          <model src="modules/persons/form.xql"/>
-        </item>
-      </item>
-      ...
+```xml
+<item name="templates">
+  <item name="search">
+    <item name="persons" epilogue="persons-search.xhtml">
+      <model src="modules/persons/form.xql"/>
     </item>
-    
+  </item>
+  ...
+</item>
+```
+
 If `Template` is missing it is assumed to be mapped onto the `/templates/name` URL where name is the name of the formular XML definition file with no suffix *xml*. You still need to explicitly declare the corresponding mapping entry in the application mapping.
 
 ### Epilogue 
 
 To understand the role of the *site:field* function of the `epilogue.xql` script let's consider a formular XML definition file with a field identified with a *country* key :
 
-    <Field Key="country" Tag="Country" Gap="1">Country</Field>
+```xml
+<Field Key="country" Tag="Country" Gap="1">Country</Field>
+```
 
 the pre-generated template mesh stored into the database (for instance with the *Install* button of the Supergrid generator) will contain a *country* extension point :
 
-    <site:field force="true" Size="11" Key="country" Tag="Country">country[Country,NaN]</site:field> 
+```xml
+<site:field force="true" Size="11" Key="country" Tag="Country">country[Country,NaN]</site:field> 
+```
 
 then, each time the formulat template is requested to generate an editor in the browser, the formular template pipeline will execute the `form.xql` XQuery model. This should dynamically generate a view where all the data to fill the extension point is wrapped it into a `site:field` element too :
 
-    <site:field Key="country">
-      <xt:use hit="1"  types="choice" values="AL AT BE BA BG HR CY CZ DK EE FI FR DE FO  GR HU IS IE IL IT LV LT
-      LU  MK MT  MD ME  NL NO  PL PT  RO RS  SK SI  ES SE  CH TR  UK UA"  i18n="Albania Austria  Belgium Bosnia\  and\
-      Herzegovina  Bulgaria Croatia  Cyprus Czech\  Republic  Denmark Estonia  Finland France  Germany Faroe\  Islands
-      Greece  Hungary Iceland  Ireland Israel  Italy Latvia  Lithuania Luxembourg  Macedonia Malta  Moldova Montenegro
-      Netherlands Norway  Poland Portugal  Romania Serbia  Slovakia Slovenia Spain  Sweden Switzerland  Turkey United\
-      Kingdom  Ukraine" param="select2_dropdownAutoWidth=true;select2_width=off;class=span12  a-control;filter=select2
-      optional;multiple=no;typeahead=yes"/>
-    </site:field>
+```xml
+<site:field Key="country">
+  <xt:use hit="1"  types="choice" values="AL AT BE BA BG HR CY CZ DK EE FI FR DE FO  GR HU IS IE IL IT LV LT
+  LU  MK MT  MD ME  NL NO  PL PT  RO RS  SK SI  ES SE  CH TR  UK UA"  i18n="Albania Austria  Belgium Bosnia\  and\
+  Herzegovina  Bulgaria Croatia  Cyprus Czech\  Republic  Denmark Estonia  Finland France  Germany Faroe\  Islands
+  Greece  Hungary Iceland  Ireland Israel  Italy Latvia  Lithuania Luxembourg  Macedonia Malta  Moldova Montenegro
+  Netherlands Norway  Poland Portugal  Romania Serbia  Slovakia Slovenia Spain  Sweden Switzerland  Turkey United\
+  Kingdom  Ukraine" param="select2_dropdownAutoWidth=true;select2_width=off;class=span12  a-control;filter=select2
+  optional;multiple=no;typeahead=yes"/>
+</site:field>
+```
 
 note that this can be done with a `lib/form.xqm` function such as :
 
-    <site:field Key="country">
-      { form:gen-country-selector($lang, " optional;multiple=no;typeahead=yes") }
-    </site:field>
+```xml
+<site:field Key="country">
+  { form:gen-country-selector($lang, " optional;multiple=no;typeahead=yes") }
+</site:field>
+```
 
 Finally the epilogue `site:field( $cmd as element(), $source as element(), $view as element()* )` function will be called with the *site:field* element from the pre-generated template in the `$source` parameter, and the *site:field* element from the formular template pipeline in the `$view` element. The function will replace the first one with the content of the second one. 
 
@@ -236,14 +256,16 @@ The `site:field` function is a little more complex in reality as it will also ta
 
 Explain : 
 
-    <Formular Width="680px" Submission="persons/submission?name=SearchCoachesRequest">
-      <Commands>
-        <Save Target="editor" data-src="match/criteria" data-type="json" data-replace-type="event" 
-          data-save-flags="disableOnSave silentErrors" onclick="javascript:$('#c-busy').show();$('#c-req-ready').hide();">
-        <Label style="min-width: 150px">Search</Label>
-      </Save>
-      </Commands>
-    </Formular
+```xml
+<Formular Width="680px" Submission="persons/submission?name=SearchCoachesRequest">
+  <Commands>
+    <Save Target="editor" data-src="match/criteria" data-type="json" data-replace-type="event" 
+      data-save-flags="disableOnSave silentErrors" onclick="javascript:$('#c-busy').show();$('#c-req-ready').hide();">
+    <Label style="min-width: 150px">Search</Label>
+  </Save>
+  </Commands>
+</Formular
+```
 
 ### Supergrid extension
 
@@ -271,10 +293,12 @@ Optional attributes :
 
 In addition you can specify namespaces used in the formular definition as in the next example :
 
-    <Form Tag="Information" StartLevel="1" Width="800px"
-      xmlns:site="http://oppidoc.com/oppidum/site"
-      xmlns:xt="http://ns.inria.org/xtiger">
-  
+```xml
+<Form Tag="Information" StartLevel="1" Width="800px"
+  xmlns:site="http://oppidoc.com/oppidum/site"
+  xmlns:xt="http://ns.inria.org/xtiger">
+```
+
 ### The `Verbatim` element
 
 > Contained in: Form
