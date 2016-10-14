@@ -36,7 +36,7 @@ This form generates output such as :
       <LastName>Doe</LastName>
     </Name>
     
-Practically the formular definition must be mounted on a specific URL that return its XML content for supergrid to find it and generate the formular template. By convention we use a `/form/name` URL for that purpose; the pre-generated formular template is available under a `templates/name.xhtml` URL.
+Practically the formular definition must be mapped to a specific URL that return its XML content for supergrid to find it and generate the formular template. By convention we use a `/form/name` URL for that purpose; the pre-generated formular template is available under a `templates/name.xhtml` URL.
 
 Formular templates generated with Supergrid can be rendered in 3 different modes : a read-only presentation mode, an update mode to update existing data and a create mode to create new data. This is indicated with a request *goal* parameter (resp. *read*, *update* or *create*) of the formular template URL. This allows to use a single formular definition for multiple purposes.
 
@@ -87,42 +87,162 @@ This is illustrated on the figure below.
 
 ## Usage
 
-### Installation
+### Supergrid installation
 
-To install the Supergrid tool you need to copy the supergrid module into you application code modules (usually into `modules/formulars`). With the adequate application mapping configuration you will get a basic GUI for testing and generating the formulars called the _Supergrid simulator_. You will also get some install functions that you can use to create deployment scripts.
+To install Supergrid formulars and the simulator you need to copy the `modules/formulars` directory to your application. Then you need to copy this entry to your application mapping file to map it on the `/forms` URL :
+
+    <item name="forms" resource="file:///formulars/_register.xml" supported="install" epilogue="formulars">
+      <access>
+        <rule action="GET" role="u:admin g:admin-system" message="system administrator"/>
+        <rule action="install" role="u:admin" message="system administrator"/>
+      </access>
+      <view src="modules/formulars/simulator.xsl"/>
+      <item resource="file:///formulars/$2.xml"/>
+      <action name="install" resource="">
+        <model src="modules/formulars/install.xql"/>
+      </action>
+    </item>
+
+You can fine tune access rules to the Supergrid simulator with the `@role` attribute of the `rule` element.
+
+You also need to add the following skin to your application `config.skin.xml` file :
+
+    <profile name="formulars" type="mesh">
+      <link href="bootstrap/css/bootstrap.css"/>
+      <link href="css/site.css"/>
+      <link href="css/forms.css"/>
+      <predef avoid="error()">axel-1.3-no-jquery</predef>
+      <predef avoid="error()">date</predef>
+      <script src="bootstrap/js/bootstrap.min.js"/>
+      <predef>select2</predef>
+      <script src="lib/formulars.js"/>
+      <script src="lib/extensions.js"/>
+      <predef>photo</predef>
+    </profile>
+
+Do not forget to make all the Javascript and CSS files from the skin available in your application *resources* folder on the file system.
 
 To test and use forms generated with Supergrid you also need to include the CSS rules for your grid layout, look-and-feel and forms widgets into your application, and the eventual associated javascript files too. This is the purpose of the _forms.css_ CSS file. In general it contains rules to overwrite specific underlying grid layout rules or default AXEL rules, but also rules to implement higher level widgets. The _forms.js_ file is the implementation of the Supergrid simulator. 
 
+You will get a basic GUI for testing and generating the formulars called the _Supergrid simulator_. You will also get some install functions that you can use to create deployment scripts. 
+
 ### Supergrid simulator
 
-TBD
+The Supergrid simulator allows to select a form, to test it and to generate the formular template into the `mesh` collection of your application.
+
+The simulator is controlled from the menu shown below. The *Install* and *Install all* buttons are displayed only if you have the rights to record the generated forms to the `mesh` collection in your application database. When testing a form with the *Test* of *Show* button, the simulator generates the form editor below the menu so you can try it.
+
+![Supergrid menu](../images/supergrid/menu.png "Supergrid menu")
+
+The *Form* drop down list allows to select the form. It's filled with the content of the `formulars/_register.xml` file in your file system.
+
+The *Test* button runs the form model through a partial supergrid transformation where all the extension points of the form are replaced with a default input field (a drop down list selector). This allows to quickly get a preview of the form without requiring to write the `form.xql` model to generate the extension points. The static input fields declared under the `Plugin` section are generated as they would be by the complete supergrid transformation.
+
+The *Control* button runs the form model through a partial supergrid transformation where all the extension points of the form are replaced with a `key[Tag,W]` string where  *key* (resp. *Tag*) is the name of the key (resp. Tag) associated to the field. *W* is the width (in grid column units) occupied by the entry field (not including its label).
+
+For instance a field like :
+
+    <Field Key="likert-scale" Tag="RatingScaleRef" Gap="3" W="12">The top management ...</Field>
+
+Would appear as `likert-scale[RatingScaleRef,9]` with the *Control* transformation.
+
+That control view of a form is useful when writing the `form.xql` model that generates the extension points content, since for each extension point in the control view, you must generate a `<site:field Key="key">` element.
+
+The *Dump* button is only meaningful if you have transformed a form with the *Test* or *Show* buttons. It opens up a modal window where it dumps the current content of the form in the editor. This is useful to check the XML ouput content model of a form.
+
+The *Show* button runs the form model through a complete supergrid transformation and renders it through a complete pipeline including the `form.xql` model that generates the dynamical entry fields with the current database content. It renders it with the goal parameter set to the current value of the *Mode* selector.
+
+The *Validate* button is only meaningful if you have transformed a form with the *Show* buttons. It runs an AXEL-FORMS validation of the form in the editor with its current content and shows errors in a reserved area at the top. The validation is the same one as executed by the 'save' command.
+
+The *Mode* selector is a drop down list allows that selects the goal parameter passed to the generator. It actually defines 3 goals, *read* for read-only, *update* for editing an existing resource and *create* to create a new resource. 
+
+The *Install* button runs the form model through a complete supergrid transformation and copy the resulting template to the `mesh` collection. 
+
+The *Install all* button is the same as the *Install* button but it installs all the forms defined in the `formulars/_register.xml` file. 
+
+Users with enough access rights to install forms to the `mesh` collection is defined by an access rule in the mapping file of the application. For instance the following rule restricts this to the *admin* user :
+
+    <rule action="install" role="u:admin" message="system administrator"/>
+
+### New formular installation
+
+Each formular XML definition file must be available in your application top-level *formulars* directory. Then it must be registered in the `formulars/_register.xml` file as a *Formular* element like :
+
+    <Formular>
+      <Name>Person (search)</Name>
+      <Form>forms/person-search</Form>
+      <Template>templates/search/persons</Template>
+    </Formular>
+
+The `Name` element is the label that will appear in the Supergrid simulator menu option.
+
+The `Form` element is the URL of the resource that will serve the formular XML definition file to Supergrid simulator. Since it will be server by the `<item resource="file:///formulars/$2.xml"/>` mapping entry (see [Supergrid Installation](#supergrid-installation) above) it must ends with the name of the formular XML definition file with no suffix *xml*.
+
+The optional `Template` element is the name of the formular resource that will serve the complete XTiger formular to the AXEL Javascript library for client-side transformation to an editor.
+
+You need to create a corresponding entry in your application mapping file. This entry is necessary to declare the pipeline for generating the `site:field` extension points with a `form.xql` model. So for instance if you have a *persons* module with a formular *persons-search* mapped onto the `/templates/search/persons` URL (as declared in the *Formular* element above) you should also add the following entries to the application mapping :
+
+    <item name="templates" collection="templates">
+      <item name="search">
+        <item name="persons" epilogue="persons-search.xhtml">
+          <model src="modules/persons/form.xql"/>
+        </item>
+      </item>
+      ...
+    </item>
+    
+It will use the precise *persons-search.xhtml* mesh that will be generated and recorded to the `mesh` collection by the *Install* button of the Supergrid simulator.
+
+By default when `Template` is missing it is assumed to be mapped onto the `/templates/name` URL where name is the name of the formular XML definition file with no suffix *xml*. You still need to explicitely declare the corresponding template resource in the application mapping.
 
 ### Epilogue 
 
-Explaing site:field function into epilogue.xql
+To understand the role of the `site:field` function of the `epilogue.xql` script let's consider a formular XML definition file with a field identified with a *country* key :
 
+    <Field Key="country" Tag="Country" Gap="1">Country</Field>
 
-### Form integration into a web page
+the pre-generated template mesh stored into the database (for instance with the *Install* button of the Supergrid generator) will contain a *country* extension point :
+
+    <site:field force="true" Size="11" Key="country" Tag="Country">country[Country,NaN]</site:field> 
+
+then, each time the formulat template is requested to generate an editor in the browser, the formular template pipeline will execute the `form.xql` XQuery model. This should dynamically generate a view where all the data to fill the extension point is wrapped it into a `site:field` element too :
+
+    <site:field Key="country">
+      <xt:use hit="1"  types="choice" values="AL AT BE BA BG HR CY CZ DK EE FI FR DE FO  GR HU IS IE IL IT LV LT
+      LU  MK MT  MD ME  NL NO  PL PT  RO RS  SK SI  ES SE  CH TR  UK UA"  i18n="Albania Austria  Belgium Bosnia\  and\
+      Herzegovina  Bulgaria Croatia  Cyprus Czech\  Republic  Denmark Estonia  Finland France  Germany Faroe\  Islands
+      Greece  Hungary Iceland  Ireland Israel  Italy Latvia  Lithuania Luxembourg  Macedonia Malta  Moldova Montenegro
+      Netherlands Norway  Poland Portugal  Romania Serbia  Slovakia Slovenia Spain  Sweden Switzerland  Turkey United\
+      Kingdom  Ukraine" param="select2_dropdownAutoWidth=true;select2_width=off;class=span12  a-control;filter=select2
+      optional;multiple=no;typeahead=yes"/>
+    </site:field>
+
+note that this can be done with a `lib/form.xqm` function such as :
+
+    <site:field Key="country">
+      { form:gen-country-selector($lang, " optional;multiple=no;typeahead=yes") }
+    </site:field>
+
+Finally the epilogue `site:field( $cmd as element(), $source as element(), $view as element()* )` function will be called with the *site:field* element from the pre-generated template in the `$source` parameter, and the *site:field* element from the formular template pipeline in the `$view` element. The function will replace the first one with the content of the second one. 
+
+The `site:field` function is a little more complex in reality as it will also take into account the request *goal* parameter to perform some automatic fields substitutions. For instance when the goal is set to *read* it will automatically turn input fields into constant fields to generate a read-only formular template.
+
+### Formular integration into a web page
 
 Explain : 
 
-<Formular Width="680px" Submission="persons/submission?name=SearchCoachesRequest">
-  <Commands>
-    <Save Target="editor" data-src="match/criteria" data-type="json" data-replace-type="event" 
-      data-save-flags="disableOnSave silentErrors" onclick="javascript:$('#c-busy').show();$('#c-req-ready').hide();">
-    <Label style="min-width: 150px">Search</Label>
-  </Save>
-  </Commands>
-</Formular
+    <Formular Width="680px" Submission="persons/submission?name=SearchCoachesRequest">
+      <Commands>
+        <Save Target="editor" data-src="match/criteria" data-type="json" data-replace-type="event" 
+          data-save-flags="disableOnSave silentErrors" onclick="javascript:$('#c-busy').show();$('#c-req-ready').hide();">
+        <Label style="min-width: 150px">Search</Label>
+      </Save>
+      </Commands>
+    </Formular
 
-Using XSLT you 
-
-
-
-### Extension
+### Supergrid extension
 
 You can plug an play extensions into Supergrid. You can create new vocabulary elements for all the categories of a supergrid form components (bindings, plugins, modal windows). They consist of XSLT template rules matching those elemnt names and invoked from the proper context of the main Supergrid transformation. For that purpose you can include the extension at the begining of the Supergrid XSLT file. Usually extensions are bound to a new XML element name (e.g. the _tabular.xsl_ extension to create cross-product table from two selectors lists with the `ProductTable` element).
-
 
 ## XML Language Specification
 
