@@ -14,7 +14,7 @@ The application also comprises transversal search pages like search for persons,
 
 The case and activity workflow view are more specific. They show a current workflow status on a time line widget at the top (just below the application menu), and a list of documents on an accordion widget some of which can be edited in place depending of the worklow status and user's rights.
 
-Some listing pages like the todo lists or data export pages, do not have a specific layout, they just show tables or summaris for printing or navigating into cases and/or activities.
+Some listing pages like the todo lists or data export pages, do not have a specific layout, they just show tables or summaries for printing or navigating into cases and/or activities.
 
 Finally a management page groups on a vertical tab below the application menu several management functionalities like user's account management to create user's login and renew passwords.
 
@@ -69,7 +69,7 @@ Then the Case Tracker application adds more XML vocabularies for higher level fu
 | _register.xml          | formulars               | list of formulars |
 | {name}.xml             | formulars/{name}.xml    | supergrid document formular {name} definitions |
 
-## Coding conventions
+## Code conventions
 
 The code is divided between server-side code, XML application configuration files and client-side code all stored in the git depot.
 
@@ -81,47 +81,57 @@ The code layout at the 1st-level folder is a direct application of the coding co
 | caches           | files to bootstrap caches |
 | config           | configuration files to be loaded into config collection |
 | data             | data files to be loaded into global-information collection |
-| debug            | files to bootstrap in-database tracing (debug.xml, login.xml) using debug collection |
+| debug            | files to bootstrap tracing (debug.xml, login.xml) using debug collection |
 | formulars        | search mask and/or document formular XML definitions |
 | indexes          | collection.xconf files to create DB indexes |
-| lib              | shared XQuery or XSLT modules |
+| lib              | shared XSLT libraries and XQuery modules |
 | mesh             | application mesh files (equivalent to application page templates) |
-| models           | shared or generic XQuery models |
+| models           | generic XQuery models |
 | modules          | parent folder for CRUD controllers and resources usually grouped in sub-folders by entity or functionality |
 | resources        | parent folder for static resources (CSS, js, etc.) |
 | scripts          | installation script (bootstrap, deployment, etc.) |
 | templates        | XTiger templates to be loaded into mesh collection (not much used since most XTiger templates are generated from formular definitions by supergrid) |
 | test             | test files |
 | untracked        | static files not under version control served by the application  |
-| views            | shared or generic XSLT views |
+| views            | generic XSLT views |
 
 ### Server-side code
 
-The server-side code is divided into shared libraries of XSLT transformation rules and shared XQuery modules (both in first level `lib` folder), generic Oppidum XSLT views (in first level `views` folder) and generic Oppidum XQuery models (in first level `models` folder), and specific modules. Note that a generic Oppidum view or model is usually a pipeline component which can be reused at the file granularity to render several application pages or between applications (by cut-and-paste).
+The `lib` folder contains shared XSLT libraries and shared XQuery modules to include in XSLT views (resp. in XQuery models). Some of them are generic enough to be copy/pasted bewteen applications (e.g. `commons.xsl` for generic UI widgets, `services.xqm` for inter-applications communications) while other may be more application specific (e.g. `forms.xqm` that contains functions to generate application drop-down lists).
 
-The specific modules can be divided into *entity modules* and *functional modules*. 
+The `views` folder contains generic XSLT views to integrate into pipelines (e.g. the `login.xsl` page).
 
-The entity modules group together XSLT views and XQuery CRUD controllers inside a sub-folder of the `modules` folder. Usually the sub-folder is named after the managed entity (e.g. `modules/cases` to handle Case entities, or `modules/persons` to hande Person entities).
+The `models` folder contains generic XQuery models to integrate into pipelines (e.g. the `login.xql` script).
 
-The functional modules group together XSLT views and XQuery controllers to manage a set of related functionalities inside a sub-folder of the `modules` folder. Usually the sub-folder is named after the functionality (e.g. `modules/stats` to handle statistics, or `modules/management` to hande diverse management functionalities like user's accounts). 
+The `modules` folder is organized into **entity modules** and **functional modules**. Each one is stored in a sub-folder.
 
-### XML application configuration
+The sub-folders with an entity name (like `modules/cases` or `modules/persons`) manage the corresponding application entities (like Cases or Persons). They very often contain one or more XQuery CRUD controllers for the entity and it's associated content.
 
-The XML application configuration files can be divided into system configuration and data configuration. System configuration is more about defining the behavior of the application (e.g. workflow transitions, rules for alert notifications) and environmental settings (e.g. SMTP server address), whereas data configuration is more about defining data used to create user generated content or to display to the user (e.g. data types definitions, e-mail templates content, localized labels, etc.).
+The sub-folders with an functionality name (like `modules/stats` or `modules/management`) group together the functionality implementation (like statistics or users's account and application configuration functionalities).
 
-The system configuation is mainly available in the `config` folder, whereas data configuration is available in the `data` folder. Some configuration files may also be scattered into functional modules (e.g. `modules/stats/stats.xml`). The specification of formulars, which can be considered in-between system and data configuration, is stored inside the first level `formulars` folder.
+### Application configuration
+
+Application configuration can be divided into **system configuration** and **data configuration**. System configuration is about defining the behavior of the application (e.g. workflow transitions, rules for alert notifications) and environmental settings (e.g. SMTP server address). Data configuration is for defining data contained in user generated content or to display to the user (e.g. data types definitions, e-mail templates content, localized labels, etc.).
+
+The `config` folder (which will be copied to the `/db/www/cctracker/config` collection) contains the system configuration files.
+
+The `data` folder  (which will be copied to the `/db/sites/cctracker/global-information` collection) contains the data configuration.
+
+Some configuration files may also be scattered into functional modules (e.g. `modules/stats/stats.xml`). 
+
+Finally the first level `formulars` folder contains formulars definition files, which can be considered in-between system and data configuration.
 
 ### Client-side code
 
-The client-side code is stored inside the `resources` folder. It contains one sub-folder for each major third party library it depends on (e.g. bootstrap, d3, etc.). The only exceptions are the AXEL and AXEL-FORMS dependencies which are copied inside the generic `resources/lib` sub-folder which is detailed below.
+The `resources` folder contains client-side code. Each major third party library is stored in its own sub-folder (e.g. bootstrap, d3, etc.). The only exceptions are the AXEL and AXEL-FORMS dependencies which are copied inside the `resources/lib` sub-folder (see below).
 
 The `resources/lib` folder contains the Javascript code of the application. Some files are named after a functional module they implement (e.g. `stats.js` that implements client-side `modules/stats`), or after a set of transverse functionalities they implement (e.g. `search.js` for `module/persons` or `modules/regions` search). Most of the other files implement the case tracker specific AXEL and AXEL-FORMS widgets extensions (i.e. plugins, filters, bindings or commands javascript objets, see [AXEL](https://github.com/ssire/**axel**) and [AXEL-FORMS](https://github.com/ssire/**axel-forms**) documentation).
 
 The `resources/css` and the `resources/images` sub-folders store respectively the case tracker CSS and image files.
 
-The boostrap forms adaptations and specific forms CSS rules are defined in `resources/css/forms.css`.
+The `resources/css/forms.css` file defines boostrap forms adaptations and specific forms CSS rules.
 
-The mapping bewteen the resource files and the application pages is declared in the `config/skin.xml` file.
+The system configuration `config/skin.xml` file defines the mapping bewteen the resource files and the application pages. It uses an Oppidum DSL.
 
 Note that per Oppidum construction and per NGINX configuration the content of the first level resources folder is not served by eXist-DB but by NGINX.
 
@@ -129,10 +139,60 @@ Note that per Oppidum construction and per NGINX configuration the content of th
 
 ### Database implementation
 
-Collections
+The case tracker database follows the Oppidum framework conventions : 
+
+* user generated content is stored in the `/db/sites/cctracker` collection (**data space**)
+* application configuration is stored in the `/db/www/cctracker` collection (**configuration space**)
+
+There is one exception for the `/db/sites/cctracker/global-information` collection that contains also application configuration data. In particular it contains all the data types definitions which are used to generate user interface selector menus, hence they belong more to the data space than the configuration space.
+
+The data space is organized into the following main collections : 
+
+* `/db/sites/cctracker/persons` : all users data (including user profiles for authentification and role management)
+  * actually it contains a single persons.xml file and an images collection with all users photos
+* `/db/sites/cctracker/cases` : all cases and activities
+  * actually it is divided into YYYY/MM sub-collections where YYYY (resp. MM) is the case creation year (resp. month)
+* `/db/sites/cctracker/enterprises` : all enterprises data (depending on controllers implementation this may be only users enterprises and not cases enterprises which are stored directly within cases)
+
+Some other collections may be used if you activate specific services : 
+  
+* `/db/sites/cctracker/checks` : pre-computed todo lists by the alerts module as per *checks.xml* configuration
+  * one file per check number
+* `/db/sites/cctracker/reminders` : control lists of the reminders e-mail notification sent by the alert module as per *checks.xml* configuration 
+  * one file per month containing reminders sent each night during the month
+* `/db/sites/cctracker/timesheets` or any other terminal name (e.g. *docs*): collections to store uploaded PDF files attached to cases or activities
+  * it contains a mirror hierarchy of sub-collections similar to the *cases* collection hierarchy
+
+Finally there are a few collections outside of the data space and configuration space for extra services :
+
+* `/db/debug` : optional debug files
+  * `login.xml`: user access traces
+  * `debug.xml` : e-mail output traces (content depends of the configuration in `settings.xml`)
+* `/db/caches` : cache files to speed up `form.xql` models execution (pre-generated drop down lists options)
+  * one collection/file per application `/db/caches/cctracker/cache.xml`
+
+As a good practice, the `lib/globals.xqm` module declares variables to be used with the *fn:doc()* or *fn:collection()* functions to access the most important resources or collections of the application. So avoid to hard-code a collection or resource path into an XQuery script, instead add a variable to the the `lib/globals.xqm` module. For instance :
+
+```xquery
+declare variable $globals:global-info-uri := '/db/sites/cctracker/global-information';
+```
 
 ### REST interface
 
-URLs
+The database implementation defines paths to store all the resources of the application, some of which are visible in the `globals.xqm` module.
+
+The REST interface defines URLs to access all the resources of the application.
+
+Both types of paths (URL and database paths) sometimes coincide, but most of the time they are different !
+
+For instance the URL `/cases/1737/activities/1/needs-analysis.xml` serves an XML representation of the NeedsAnalysis fragment which is stored in database in the resource `/db/sites/cctracker/cases/2016/05/1737/case.xml`...
+
+The application mapping file (`config/mapping.xml`) uses the Oppidum syntax to declare all application URLs into a single XML document. It is used by Oppidum to analyse incoming HTTP requests and to generate the pipeline (model, view, epiloque) that renders the request.
+
+You can use the experimental Oppidum mapping explorer tool on your development machine to get an overview of the REST interface of the application. For that purpose if the case tracker is installed on port 8080 open the URL [http://localhost:8080/exist/projets/oppidum/test/explorer](http://localhost:8080/exist/projets/oppidum/test/explorer?m=cctracker) and select the *cctracker* module to explore as on the snaphost below.
+
+![Mapping explorer](../images/architecture/explorer.png "Mapping explorer")
+
+
 
 
