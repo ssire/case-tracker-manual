@@ -27,9 +27,9 @@ The navigation structure is implemented both in mesh files (inside the *mesh* fo
 The Case Tracker source code implements a limited set of patterns and constructs : 
 
 1. XML configuration files (see next section) that describe application behavior
-2. dynamical formulars pre-generated with [Supergrid](./doc/supergrid.md) embedded inside [user interface widgets](./doc/components.md)
-3. client-side [Commands](./doc/commands.md) hosted on [user interface widgets](./doc/components.md)
-4. client-server interactions with simple [Ajax protocols](./doc/ajax.md) (XML or JSON)
+2. dynamical formulars pre-generated with [Supergrid](./supergrid.md) embedded inside [UI widgets](./components.md)
+3. client-side [Commands](./commands.md) hosted on [UI widgets](./components.md)
+4. client-server interactions with simple [Ajax protocols](./ajax.md) (XML or JSON)
 5. CRUD controllers to update application entities into the database (including implementing functional dependencies or splitting of entities into multiple database locations)
 
 Points 2. and 3. use HTML micro-format attributes (e.g. *data-command="save"*) for associating formulars and commands with user-interface components.
