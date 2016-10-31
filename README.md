@@ -30,7 +30,7 @@ The main Case Tracker components can be use to build case management application
 
 **Server-side components**
 
-- Workflow : user-driven and data-driven workflows
+- [Workflow](./doc/workflow.md) : user-driven and data-driven workflows
 - [Supergrid](./doc/supergrid.md) : grid-base form generator
 - Alerts : todo list generation and notifications
 - Stats : statistics and graphs rendering
