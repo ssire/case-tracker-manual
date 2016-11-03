@@ -264,14 +264,14 @@ Explain :
     <Label style="min-width: 150px">Search</Label>
   </Save>
   </Commands>
-</Formular
+</Formular>
 ```
 
 ### Supergrid extension
 
 You can plug an play extensions into Supergrid. You can create new vocabulary elements for all the categories of a supergrid form components (bindings, plugins, modal windows). They consist of XSLT template rules matching those elemnt names and invoked from the proper context of the main Supergrid transformation. For that purpose you can include the extension at the begining of the Supergrid XSLT file. Usually extensions are bound to a new XML element name (e.g. the _tabular.xsl_ extension to create cross-product table from two selectors lists with the `ProductTable` element).
 
-## XML Language Specification
+## XML formular specification language 
 
 ### The `Form` element
 

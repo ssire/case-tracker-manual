@@ -39,11 +39,15 @@ The workflow is the main entry point to a case or an activity, it shows the work
 
 ![Workflow](../images/tour/workflow.png "Workflow")
 
+Workflows are specified with a declarative [Workflow specification language](./workflow.md).
+
 ### Editors
 
 There are editors for every document in a workflow, the image below shows an extract of a case needs analysis document editor.
 
 ![Editors](../images/tour/editors.png "Editors")
+
+Editors and formulars are specified with a declarative [XML formular specification language ](./supergrid.md).
 
 ### E-mail
 
@@ -51,11 +55,13 @@ There are also editors to compose and send *e-mail* messages. They are archived 
 
 ![E-mail](../images/tour/e-mail.png "E-mail")
 
-### Reminders
+### Alerts
 
-The reminders rule-based engine is run at fixed intervals. It computes reminder notifications which can be sent as e-mail messages to the involved actors and/or archived for daily consultation from the *To do* menu. The menu is personalized and shows only reminders relevant to the user.
+The alerts rule-based engine is run at fixed intervals. It computes alerts which can be sent as e-mail messages to the involved actors and/or archived for daily consultation from the *To do* menu. The menu is personalized and shows only reminders relevant to the user.
 
 ![Reminders](../images/tour/reminders.png "Reminders")
+
+Alerts are specified with a declarative [Alerts and notification specification language](./alerts.md)
 
 ### Search
 
@@ -68,6 +74,8 @@ In addition to the dashboard, there are also several **search** interfaces to ac
 All the case and activity data is available to generate statistics. A builtin statistics module allows to configure different kind of graphs and export tables as in the image below.
 
 ![Statistics](../images/tour/statistics.png "Statistics")
+
+Statistics are specified with a declarative [Statistics specification language](./statistics.md).
 
 ### Users management
 

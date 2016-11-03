@@ -34,7 +34,7 @@ The main Case Tracker components can be use to build case management application
 - [Workflow](./doc/workflow.md) : user-driven and data-driven workflows
 - [Supergrid](./doc/supergrid.md) : grid-base form generator
 - [Alerts](./doc/alerts.md) : todo list generation and notifications
-- Stats : statistics and graphs rendering
+- [Statistics](./doc/statistics.md) : statistics and graphs rendering
 - [Services](./doc/services.md) :  library for services integration
 - Media : template-driven media engine that currently generates and sends e-mail
 - Users : users management

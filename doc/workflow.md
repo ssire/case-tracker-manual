@@ -1,6 +1,6 @@
-# Workflow definition language
+# Workflow specification language
 
-The case and activity workflows are written using the workflow definition language. They are defined in the `config/application.xml` file.
+The case and activity workflows are written using the workflow specification language. They are defined in the `config/application.xml` file.
 
 The definitions have multiple purposes among which :
 
