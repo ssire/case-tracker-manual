@@ -1,68 +1,72 @@
 # Workflow definition language
 
-The case and activity workflow of the application are defined in the `config/application.xml` file. They are written using the workflow definition language.
+The case and activity workflows are written using the workflow definition language. They are defined in the `config/application.xml` file.
 
-These definitions have multiple purposes among which :
+The definitions have multiple purposes among which :
 
-* to generate the **workflow accordion view** (see also the Accordion widget in [UI components](components.md)). This is implemented by the `modules/workflow/workflow.xqm` XQuery module and by the `modules/workflow/workflow.xsl` view library;
+* to generate the **workflow accordion view** (see the Accordion widget in [UI components](components.md));
 
-* to control and to apply the **workflow transitions** in the case and activity `status.xql` controllers;
+* to control and to apply the **workflow transitions**;
 
 * to control the **generation of automatic and semi-automatic e-mail notifications**;
 
-* to control **access rights on workflow document and other resources** in every document CRUD controller.
+* to control **access rights on workflow document and other resources** in CRUD controller.
 
 The workflow accordion view shows documents in tabs in an accordion widget. Each tab displays a document in read-only mode which can be turned into a document editor if the user has enough access rights. The document may also contain satellite documents which can be edited in a modal window. The buttons to edit satellite documents are visible only if the user has enough access rights. Some read-only documents may be composite documents made of aggregated data from several documents. Some documents may only be edited through satellite documents.
 
-Note that the current implementation uses numbers to identify the case or workflow status. This is used to trigger status change by incrementing or decrementing the current status by a fixed increment or decrement number.
+The current implementation uses numbers to identify the case or workflow status. This is used to trigger status change by incrementing or decrementing the current status by a fixed increment or decrement number.
+
+Most of the workflow definition language is implemented by the following files :  
+
+* `modules/workflow/workflow.xqm`, `modules/workflow/alert.xqm` and `lib/access.xqm` : functions implementing the vocabulary
+* `modules/cases/workflow.xql` (resp. `modules/activities/workflow.xql`) and `modules/workflow/workflow.xsl` view : pipeline to generate the workflow accordion view
+* `modules/cases/status.xql` (resp. `modules/activities/status.xql`) : controllers that apply workflow transitions
+* `modules/workflow/alert.xql` : controller that deals with e-mail notification 
 
 ## Document skeleton
 
-The workflow specification skeleton looks like :
+A workflow specification skeleton is presented below :
 
 ```xml
 <Application>
   <Messages>
-    ...Email elements...
+    1 or more <Email>
   </Messages>
   <Workflows>
-    <Workflow Id="Case">
+    <Workflow Id="Case | Activity">
       <Documents TemplateBaseURL="../templates/">
-        ...Document elements...
+        1 or more <Document>
       </Documents>
       <Transitions>
-        ...Transition elements...
+        1 or more <Transition>
       </Transitions>
-    </Workflow>
-    <Workflow Id="Activity">
-      ...same as above..
     </Workflow>
   </Workflows>
   <Security>
     <Documents>
-      ...Document elements...
+      1 or more <Document>
     </Documents>
     <Resources>
-      ...Resource elements...
+      1 or more <Resource>
     </Resources>
   </Security>
   <Description>
-    ...Role elements...
+    1 or more <Role>
   </Description>
 </Application>
 ```
 
-## Common elements
+## Common vocabulary
 
-Some elements are reused in different parts of the workflow definition, these are the `Email` element to specify notification e-mails and the `Meet` element to specify access control rules.
+The `Email` and the `Meet` elements are used to define notification e-mails and access control rules in different parts of a specification.
 
 ### Notification e-mail : the `Email` element
 
-The `Email` element is a common building block which appears in different parent elements to specify a notification mail.
+The `Email` element defines a notification e-mail.
 
-The `@Template` attribute is the name of the e-mail template to use to generate the e-mail message and some extra headers. E-mail templates must be defined in the `data/global-information/email.xml` file as an *Alert* or *Email* element with a corresponding `@Name` attribute (TODO: see also the Media engine documentation).
+The `@Template` attribute is the name of the e-mail template to use to generate the e-mail message and some extra headers. It refers to an *Alert* or *Email* element with a corresponding `@Name` attribute in the the `data/global-information/email.xml` file (TODO: see also the Media engine documentation).
 
-The `Recipients` element lists the recipients of the message. It's textual value is the list of direct recipient (To: field). The optional `@CC` attribute is the list of indirect recipients (carbon copy or CC: recipicents). The *recipients* syntax follows the application *roles specification micro-language* syntax.
+The `Recipients` element lists the recipients of the message. It's textual value is the list of direct recipients (SMTP header *To*). The optional `@CC` attribute is the list of indirect recipients (SMTP header *Cc* or carbon copy). Both follow the *roles specification micro-language* syntax (see [Glossary](./glossary.md)).
 
 Example : 
 
@@ -74,12 +78,7 @@ Example :
 
 ### Access control : the `Meet` element 
 
-The `Meet` element of the workflow specification contains an expression that defines a set of users by their roles. This can be used for instance to test if the current user is member of the set and can perform some actions.
-
-The expression contains a whitespace separated list of **role tokens**. Each role token starts with a scope letter followed by a colon and by a role name. The scopes are :
-
-* `g` for global scope (or static role) : the targeted users are independent from the database content (e.g. a system administator, a coaching assistant, etc.)
-* `r` for relative scope (or dynamical role) : the targed users depends on a current case or activity context (e.g. the region manager for a case or the coach for an activity)
+The `Meet` element defines a set of users by their roles. This can be used for instance to test if the current user is member of the set and can perform some actions. The `Meet` element is part of the access control rules specification micro-language (see [Glossary](./glossary.md)).
 
 The `Meet` element inside a `Transition` element defines who can trigger the transition.
 
@@ -104,19 +103,19 @@ Example:
 </Document>
 ```
 
-The example means that any coaching manager or coaching assistant can update the document, or the region manager (KAM) for the case to which belong the document under consideration.
+The example means that any coaching manager, coaching assistant or the region manager (KAM) for the case can edit the Information document of the case.
 
 ## The `Messages` section
 
-The `Messages` section is a placeholder to define e-mail notifications which are not directly triggered by workflow transitions but which can be triggered by other means in any part of the application code. The `Messages` section of the workflow definition language has been defined to group them together for convenience.
+The `Messages` section is a placeholder to define all the e-mail notifications of the application at the same location for convenience.
 
-The `Email` elements in the `Messages` section may also use the following extra-atrtibutes :
+It contains the `Email` elements corresponding to notifications which can be triggered in any part of the application code, at the exclusion of the `Email` elements defining the notification sent by workflow transitions which are defined in the `Workflows` section (see below) and of the notifications sent by the alerts module (see [Alerts](./alerts.md) chapter). You may use it or not when coding new e-mail notifications, but this is recommended to keep this level of indirection for configurability.
 
-* the `@Context` attribute tells in which document context (document root name) the e-mail maybe triggered; this applies to the case when the e-mail sending is triggered by the CRUD controller of the document (e.g. saving the document triggers a notification e-mail)
+The `Email` elements in the `Messages` section may also use custom extra-attributes :
 
-* the `@In` attribute tells which XQuery script actually sends the e-mail
+* the `@Context` attribute tells to which document the notification e-mail is related; this applies to notifications sent on behalf of the CRUD controller of the document, for instance when saving; some parts of this protocol are hard-coded in the `alert.xql` script;
 
-These two attributes are used for documentation purpose only.
+* the `@In` attribute tells which XQuery script actually sends the e-mail, this attribute is for documentation purpose only.
 
 Example :
 
@@ -126,9 +125,11 @@ Example :
 </Email>
 ```
 
-In this example the *coach-contracting-start* e-mail is a semi-automatic e-mail which appears pre-generated in a modal window when the user saves the funding decision document (note that the controller also checks the funding decision has been approved but this does not appear in the `Email` element defintion). It is sent in a second time by the *alert.xql* script if the user confirms (i.e. clicks on *Send* button).
+In this example the *coach-contracting-start* e-mail is sent by the *alert.xql* script when updating the *FundingDecision* document. This is a semi-automatic e-mail which appears pre-generated in a modal window when the user saves the *FundingDecision* document (note that the controller also checks the funding decision has been approved when saving but this does not appear in the `Email` element definition, this is controlled with a `forward` element in the Ajax response as explained in the [Ajax protocols](./ajax.md) chapter). It is sent if the user confirms (i.e. clicks on *Send* button) although this cannot be deduced directly from the definition itself.
 
 ## The `Workflows` section
+
+The `Workflows` section contains one `Workflow` element for each workflow to define. Actually there must be one element with a *Case* attribute Id and one element with an *Activity* attribute Id to define respectively the case and activity workflows.
 
 ### The `Document` element inside the `Workflow` elements
 
@@ -140,15 +141,15 @@ The `@AtStatus` attribute is a whitespace separated list of the worklfow status 
 
 The optional `@Blender` attribute must be set to *yes* if the document within the tab uses the *XSLT blender* to render in read-only mode.
 
-The `@class` attribute adds the corresponding class attribute to the accordion tab rendering. This is used to color tab menu bar depending on the workflow origin of the document (the workflow origin beeing the workflow from which the document is initially created).
+The `@class` attribute adds the corresponding class attribute to the accordion tab rendering. This is used to color tab menu bar depending on the workflow origin of the document (the workflow origin is the workflow from where the document has been initially created).
 
 The unique `Controller` element is the name of the controller to load/save the document.
 
 The unique `Template` element is the name of the template to display the document.
 
-Both the *Controller* and *Template* names are concatenated with the `@TemplateBaseURL` attribute of the parent `Workflow` element to generate the URL of the corresponding resource.
+Both the *Controller* and *Template* names are concatenated with the `@TemplateBaseURL` attribute of the parent `Workflow` element to generate the URL of the corresponding resources.
 
-Then if may contain one or mor *Action*, *AutoExec* and *Host* elements.
+Then it may contain one or mor `Action`, `AutoExec` and `Host` elements.
 
 Example :
 
@@ -187,27 +188,40 @@ The *status* action generates a *status* command. The optional `@Id` attribute i
 
 The optional `AutoExec` element generates an *autoexec* command in the accordion view with an *id* set to it's `@Id`. It implements the `forward` element of the Ajax response sent by a document CRUD controller on saving as explained in the [Ajax protocols](ajax.md) chapter. This way server-side code can trigger the pre-generated tierce command execution  through the Ajax response.
 
-The `Forward` element identifies the tierce command.
-
-The `@Command` attribute of the `Forward` element gives the name of the tierce command to execute (e.g. *status* to trigger a status change). The text value of the `Forward` element gives the *id* of the DOM element hosting the tierce command. The optional `@EventTarget` attribute allows to simulate a synthetic user event with a *target* property. This is useful when the tierce command is naturally executed by a click or a selection in a menu (e.g. the *status* command is triggered by selecting an option in a drop down list). 
+The `Forward` element identifies the tierce command. The `@Command` attribute of the `Forward` element gives the name of the tierce command to execute (e.g. *status* to trigger a status change). The text value of the `Forward` element gives the *id* of the DOM element hosting the tierce command. The optional `@EventTarget` attribute allows to simulate a synthetic user event with a *target* property. This is useful when the tierce command is naturally executed by a click or a selection in a menu (e.g. the *status* command is triggered by selecting an option in a drop down list). 
 
 #### The `Host` element
 
 Each document may host one or more satellite documents declared through a `Host` element. A satellite document is a document which can be displayed inside the main tab document but which has its own editor appearing in a modal window triggered by a specfic edit button.
 
-The `@RootRef` attribute points to the `@Root` attribute of a `Document` element inside the `Security` section that defines access control rules.
+The `@RootRef` attribute must match the `@Root` attribute of a `Document` element inside the `Security` section.
 
 The `Action` element ...
 
-The `Flag` element drives the generation of the flag parameters of the HTTP request loading the document template in the tab. It contains the name of a flag to add to the generated template URL if the user can perform the action on the host document. This flag is usually associated to a `site:conditional` rule in the tab document formular specification (see [Supergrid](supergrid.md)) to display or not the action button.
+The `Flag` element drives the generation of the flag parameters of the HTTP request loading the document template in the tab. It contains the name of a flag to add to the generated template URL if the user can perform the action on the host document. This flag must be associated to a `site:conditional` rule in the tab document formular specification (see [Supergrid](supergrid.md)) to display the action button only to authorized users.
 
 ### The `Transition` elements inside the `Workflow` elements
 
-TBD
+Example : 
+
+```xml
+<Transition From="2" To="3" Intent="accept" Template="kam-notification" Id="go-needs-analysis">
+  <Meet>r:region-manager</Meet>
+  <Recipients Key="kam-1">r:kam</Recipients>
+  <Email Template="sme-notification">
+    <Recipients CC="r:kam" Max="1" Key="sme-1" Explain="NO-NOTIFY-SME-TRANSITION-REPORT"/>
+  </Email>
+  <Assert Base="$case/Management" Error="MISSING-KAM">
+    <true>$base/AccountManagerRef[. ne '']</true>
+  </Assert>
+</Transition>
+```
+
+The example from a case workflow defines a transition between workflow status 2 and 3. The labelling of its corresponding option in the status change drop down list will use the provided intent (see exact interpretation inside `modules/workflow/workflow.xsl` view). The transition will trigger the semi-automatic *kam-notification* e-mail (editable in a modal window and sent on user's behalf) and an automatic *sme-notification* e-mail. The transition can only be executed if the *Management* document defines a key asset manager, otherwise it will throw a MISSING-KAM error. The transition is associated with a *go-needs-analysis* id most probably because it can be triggered automatically by an autoexec command defined on a related `Document` element in the `Documents` section.
 
 ## The `Security` section
 
-The `Security` section defines access control rules for editing all the entities of the application. By entities that means workflow documents (e.g. a *funding request*) and other application resources (e.g. a *person*). 
+The `Security` section defines access control rules for editing all the entities of the application. This includes workflow documents (e.g. a *FundingRequest* document) but also any other application resource like a *person*. 
 
 The `Documents` section made of `Document` elements defines rules for editing workflow documents.
 
@@ -221,7 +235,7 @@ The `@TabRef` attribute links a document with a tab (see above the `@TabId` attr
 
 The `@Root` attribute links a satellite document with a host document (see above the `@RootRef` attribute). It must match the name of the XML element storing the document in the case resource.
 
-There is an `Action` element for each type of action allowed on a document (e.g. *update*, *delete*). It contains rules to define who is allowed to perform the corresponding action. Rules are expressed using the access control *rules specification micro-language* syntax.
+There is an `Action` element for each type of action allowed on a document (e.g. *update*, *delete*). It contains rules to define who is allowed to perform the corresponding action. Rules are expressed using the *access control rules specification micro-language* syntax (see [Glossary](./glossary.md)).
 
 Example :
 
@@ -233,15 +247,15 @@ Example :
 </Document>
 ```
 
-The example tells that the document with root SME-Agreement can only be update by the coach of the activity. 
+The example tells that only the coach of the activity can edit the document with root SME-Agreement and that system administrator users cannot by-pass that rule because of the strict policy.
 
 ### The `Resource` element
 
-The `Resource` element defines the rules to edit an application resources different from a workflow document. These resources are usually stored outside of the *cases* collection and have their own controllers (one per resource type).
+The `Resource` element defines the rules to edit application resources at the exception of workflow documents (see above). These resources are usually stored outside of the case resource and have their own controllers (one per resource type).
 
-The `Action` element contains for each type of action the access control rules defined with the *acces control rules specification language*.
+The `Action` element contains for each type of action the access control rules defined with the *access control rules specification micro-language* syntax (see [Glossary](./glossary.md)).
 
-These rules are implemented by the *access:check-omnipotent-user-for* function of the `lib/access.xqm module`. This function must be called to enforce access control rules before updating an application resource in its CRUD controller. It can also be used to pre-generate the edit buttons and widgets.
+These rules are implemented by the *access:check-omnipotent-user-for* function of the `lib/access.xqm` module. This function must be called to enforce access control rules in the CRUD controller of the resource. It can also be used to pre-generate the edit buttons and widgets.
 
 Actually *access:check-omnipotent-user-for* only supports static roles (i.e. starting with *g:*).
 

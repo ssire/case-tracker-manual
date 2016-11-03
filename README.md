@@ -25,6 +25,7 @@ The main Case Tracker components can be use to build case management application
 
 **Overview**
 
+- [Glossary](./doc/glossary.md) :  Project's glossary
 - [Architecture](./doc/architecture.md) :  Architecture and conventions
 - [Ajax protocols](./doc/ajax.md) :  Ajax protocols
 
@@ -32,7 +33,7 @@ The main Case Tracker components can be use to build case management application
 
 - [Workflow](./doc/workflow.md) : user-driven and data-driven workflows
 - [Supergrid](./doc/supergrid.md) : grid-base form generator
-- Alerts : todo list generation and notifications
+- [Alerts](./doc/alerts.md) : todo list generation and notifications
 - Stats : statistics and graphs rendering
 - [Services](./doc/services.md) :  library for services integration
 - Media : template-driven media engine that currently generates and sends e-mail

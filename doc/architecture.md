@@ -29,8 +29,8 @@ The Case Tracker source code implements a limited set of patterns and constructs
 1. XML configuration files (see next section) that describe application behavior
 2. dynamical formulars pre-generated with [Supergrid](./supergrid.md) embedded inside [UI widgets](./components.md)
 3. client-side [Commands](./commands.md) hosted on [UI widgets](./components.md)
-4. client-server interactions with simple [Ajax protocols](./ajax.md) (XML or JSON)
-5. CRUD controllers to update application entities into the database (including implementing functional dependencies or splitting of entities into multiple database locations)
+4. client-server interactions using several [Ajax protocols](./ajax.md) (XML or JSON)
+5. CRUD controllers to update application entities into the database (including functional dependencies handling or splitting of entities into multiple database locations)
 
 Points 2. and 3. use HTML micro-format attributes (e.g. *data-command="save"*) for associating formulars and commands with user-interface components.
 
@@ -40,34 +40,35 @@ The Case Tracker follows a *specification driven programming* style. Core progra
 
 In summary *application programming* is splitted into editing XML configuration files and creating some XQuery controllers to update the database content.
 
-The two tables below show different configuration files in use by the Case Tracker and their location in the file system. All these files are copied to the application config collection in the database (`/db/www/{app}/config`) by the deployment script. 
+The two tables below show different configuration files in use by the Case Tracker and their location in the file system. These files must be deployed into the application configuration in the database (`/db/www/{app}/config`) by the deployment script. 
 
 The Oppidum framework itself comes with a set of XML vocabularies. They are listed in the table below.
 
 | File                   | Location                | Goal |
 |:-----------------------|:------------------------|:-----|
-| mapping.xml            | config                  | application REST mapping |
-| modules.xml            | config                  | application REST mapping modules |
-| skin.xml               | config                  | application CSS and Javascript dependencies |
 | dictionary.xml         | config                  | application localisation strings |
 | errors.xml             | config                  | application error messages |
+| mapping.xml            | config                  | application REST mapping |
 | messages.xml           | config                  | application information messages |
+| modules.xml            | config                  | application REST mapping modules |
+| skin.xml               | config                  | application CSS and Javascript dependencies |
 
 Then the Case Tracker application adds more XML vocabularies for higher level functionalities. They are listed in the table below.
 
-| File                   | Location                | Goal |
-|:-----------------------|:------------------------|:-----|
-| application.xml        | config                  | workflows, document access rights |
-| services.xml           | config                  | inter-applications communication |
-| settings.xml           | config                  | application global parameters |
-| variables.xml          | config                  | variables definition for e-mail templates |
-| email.xml              | data/global-information | e-mail templates  |
-| checks.xml             | modules/alerts          | todo list computation and reminder alerts |
-| stats.xml              | modules/stats           | masks, graphs and export table for statistics |
-| global-information.xml | data/global-information | data types definition for selectos (drop-down lists, etc.)  |
-| proxies.xml            | config                  | data model functional dependencies |
-| _register.xml          | formulars               | list of formulars |
-| {name}.xml             | formulars/{name}.xml    | supergrid document formular {name} definitions |
+| File                   | Location                 | Goal |
+|:-----------------------|:-------------------------|:-----|
+| application.xml        | config                   | workflows, document access rights |
+| checks.xml             | modules/alerts           | todo list computation and e-mail reminders |
+| email.xml              | data/global-information  | e-mail templates  |
+| global-information.xml | data/global-information  | data types definition for selectors (drop-down lists, etc.)  |
+| proxies.xml            | config                   | data model functional dependencies |
+| security.xml           | config                   | thrid party identity providers specification |
+| services.xml           | config                   | inter-applications communication |
+| settings.xml           | config                   | application global parameters |
+| stats.xml              | modules/stats            | masks, graphs and export table for statistics |
+| variables.xml          | config                   | variables definition for e-mail templates |
+| {formular}.xml         | formulars/{formular}.xml | supergrid XML formular specifications |
+| _register.xml          | formulars                | formulars registery |
 
 ## Code conventions
 
