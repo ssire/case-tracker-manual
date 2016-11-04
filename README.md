@@ -1,8 +1,6 @@
 # Case Tracker software documentation
 
-This is the documentation about the case tracker pilote application by Oppidoc
-
-The case tracker pilote is written and maintained by Stéphane Sire (<s.sire@oppidoc.fr>)
+This is the documentation about the case tracker pilote application by Oppidoc. It is maintained by Stéphane Sire (<s.sire@oppidoc.fr>).
 
 The case tracker pilote is a reference application which can be customized to create mutiple types of case management applications with user-driven and data-driven workflows :
 
@@ -11,7 +9,7 @@ The case tracker pilote is a reference application which can be customized to cr
 
 The easiest way to create a case management application from the case tracker is to fork it and start a new version (*source code depot will be available soon*).
 
-The case tracker pilote is also a workbench for a new programming architecture that we call XML full-stack programming. It also has some flavors of the specification driven programming style.
+The case tracker pilote is a workbench for the **XML full-stack programming** architecture. It has some flavors of the **specification driven** programming style because a significant portion of application code interprets specifications written with custom XML  vocabularies. In this regards the code base can be used to create an eco-system for business applications that share some common XML vocabularies and their underlying implementation libraries (XQuery modules, XSLT views).
 
 > This is a work in progress, initiated for the Platinn coaching application in Switzerland in 2013/2014, and continued under the auspices of the Coachcom 2020 project from september 2014 to november 2016. Coachcom is a coordination and support action (H2020-635518; 09/2014-08/2016) selected by the European Commission to develop a framework for the business innovation coaching offered to the beneficiaries of the Horizon 2020 SME Instrument.
 
@@ -32,6 +30,7 @@ The main Case Tracker components can be use to build case management application
 **Server-side components**
 
 - [Workflow](./doc/workflow.md) : user-driven and data-driven workflows
+- Data types : application data types to generate input selectors
 - [Supergrid](./doc/supergrid.md) : grid-base form generator
 - [Alerts](./doc/alerts.md) : todo list generation and notifications
 - [Statistics](./doc/statistics.md) : statistics and graphs rendering
