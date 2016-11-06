@@ -51,7 +51,7 @@ Editors and formulars are specified with a declarative [XML formular specificati
 
 ### E-mail
 
-There are also editors to compose and send *e-mail* messages. They are archived into the application. The case tracker supports fully automated e-mail, semi-automated e-mail which are pre-filled and submitted to the user before sending, and manual e-mail as in the image below.
+There are also editors to compose and send *e-mail* messages. They are archived into the application. The case tracker supports fully automated e-mail sent without direct human intervention, semi-automated e-mail which are pre-filled and presented to the user before sending, and classical e-mail as in the image below.
 
 ![E-mail](../images/tour/e-mail.png "E-mail")
 

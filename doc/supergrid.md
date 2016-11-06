@@ -273,6 +273,24 @@ You can plug an play extensions into Supergrid. You can create new vocabulary el
 
 ## XML formular specification language 
 
+
+### The URL micro-syntax
+
+The URL micro-syntax is a facility to generate relocatable URLs independents of the current page address. They are used in a formular that embeds other formulars (e.g. in modal windows) to make the formular less dependent on the URL of the page that contains it.
+
+The URL micro-syntax is based on two prefixes :
+
+* the ^ (carret) prefix concatenates the base URL as defined by the closest *data-axel-base* attribute found in the formular container parents (jQuery *closest* function), typically it should be set to the application base URL to get mode independent URLs (*dev*, *prod* or *test* modes);
+* the ~ (tilde) prefix concatenates the current location path in front of the URL, this is convenient to keep the last part of the URL when it doesn't ends with a trailing /
+
+And on a variable : 
+
+* $^ is replaced by the latest location path segment in front of the URL, this is convenient to address the case or activity from a URL of one of the case or activity document (e.g. when viewing /case/100/needs-analysis.xml $^ is equivalent to /case/100)
+
+The prefixes syntax does not preserve hash tag or query parameters of the URL to expand so you must not need it !
+
+The URL micro-syntax is implemented by the *$axel.resolveUrl* Javascript function which is defined in AXEL-FORMS `command.js`.
+
 ### The `Form` element
 
 > Contained in: document root
@@ -358,33 +376,117 @@ Optional attributes :
 * `@W` : total horizontal space occupied by the field in grid units (12 maximum)
 * `@L` : left margin (usually set to 0 when vertically staking fields w/o wrapping them into rows)
 
+### The `Button` element
+
+The `Button` element creates an HTML button element. It is mostly used to execute an associated command as described in the commands section below.
+
+The `@Key` identifies the button for associating a command.
+
+The following optional attributes are available :
+
+* `@W` specifies the button width in in grid units (defaults to 12);
+* `@StickyClass` (*DEPRECATED* ?) sets the whole value of the button class attribute; 
+* `@Class` adds extra class(es) to the button, this is not compatible with the use of a *StickyClass* attribute;
+* `@Id` or `@id` sets the id of the button, use either one but not both;
+* `@loc` and `@style` are transferred to the HTML button element.
+
 ### The `Modals` section element
 
 #### The `Modal` element
 
-The `Modal` element defines a modal window that loads an XTiger template.
+The `Modal` element defines a modal editor window. A modal editor window is a pre-configured modal window that loads an XTiger formular template for viewing or editing a resource. It is used by some commands as described in the next section, but it can also be used programmatically. The modal window is actually implemented with a bootstrap modal (a header, a body and a footer).
 
-The mandatory `@Id` attribute defines the modal identifier which is defined as _{@Id}-modal_. The identifier itself is used for identifying the editor generated inside the modal.
+The mandatory `@Id` attribute defines the modal identifier which is generated as _{@Id}-modal_. The identifier itself is used to target the editor generated inside the modal, for instance using the *$axel* wrapped set functional object.
 
-The modal window is actually implemented with a bootstrap modal (a header, a body and a footer).
+The mandatory `@Width` attribute specifies the modal width in pixels with the *px* unit.
 
-The header displays a title configured with the `Title` element. By default it displays a cross to dismiss the modal window without performing any action. You can eventually remove the cross by adding a `@Dimiss="none"` attribute.
+The `Title` element text content is displayed in the header. By default it displays a cross to dismiss the modal window without performing any action. You can eventually remove the cross by adding a `@Dimiss="none"` attribute.
 
-The body contains a pre-configured editor with a _transform_ command initialized with the template specified in the `@Template` attribute.
+The optional `@Template` attribute generates a *data-template* attribute to configure the _transform_ command generated on the body. (TODO: explain when template is loaded). It can use the URL micro-syntax (see above).
 
-The `Footer` element defines the commands to display in the footer of the modal window.
+The optional `Footer` element defines actions to display in the footer of the modal window. By default the footer contains a Save and a Cancel buttons.
 
-If there is no `Footer` element the footer contains a Save and a Cancel buttons.
+The Save button holds a _save_ command. That command can be configured with additional optional attributes (see also AXEL save command document) : 
 
-The Save button defines a _save_ command. The command will also duplicate save related events on the element targeted by the optional `@EventTarget` attribute. The optional `@SaveLabel` attribute can be used to change the label of the default Save button.
+* `@EventTarget` generates a *data-event-target* attribute to tell the save command to duplicate events on the corresponding element; 
+* `@AppenderId` generates a *data-replace-type="event append"* and a *data-replace-target* attribute equal to its text content;
+* `@PrependerId` generates a *data-replace-type="event prepend"* and a *data-replace-target* attribute equal to its text content;
+* `@SaveLabel` changes the label of the Save button
 
 The Cancel button defines a _trigger_ command that sends an `axel-cancel-edit` event on the editor contained inside the modal.
 
+Example : 
+
+```xml
+<Modal Id="c-entity-assignment" Width="700px" EventTarget="c-editor-case-init">
+  <Title>EEN Managing Entity Assignment</Title>
+</Modal>
+```
+
 ### The `Commands` section element
 
-> Contains: Add, Augment
+> Contains: Add, Augment, Open
 
-TBD
+The `Commands` section declares AXEL commands to install on a `Button` host element of the formular (see above).
+
+The `@Key` attribute of the command element matches the button `@Key` attribute. 
+
+A current limitation is that a key should not be contained inside another key. It is theoritically possible to declare several buttons with the same key to instantiate the same commands multiple times.
+
+#### The `Add` element 
+
+The `Add` element opens a modal editor window for editing a satellite document or creating a document (e.g. an e-mail message) 
+
+Note that you may trigger an *add* command with the `forward` element of an Ajax response (see [Ajax protocols](./ajax.md) chapter), the command is identified by the `@Id` attribute of its button host element. If you do not want the user to be able to execute the command, you need to hide the button element for instance with the `@Class` attribute of the button because the button is required to generate the command.
+
+The `@TargetEditor` attribute specifies the `@Id` attribute of a modal editor window that can be created with a `Modal` element (see below).
+
+The `@Template` and `@Resource` attributes specifies the address of the template and of the resource to dynamically load inside the modal editor window. They can use the URL micro-syntax (see above).
+
+Example :
+
+The following `Button` element 
+
+```xml
+<Button Id="coach-contracting-start" Key="cde.coach-contracting-start" Class="btn-small btn-primary hide" W="2" style="margin: 0px 0 0 10px">Send Email</Button>
+```
+
+is attached to the command 
+
+```xml
+<Commands>
+  <Add Key="cde.coach-contracting-start" TargetEditor="c-coach-contracting-email" Template="templates/notification?goal=create&amp;auto=1" Resource="~/alerts?goal=init&amp;from=FundingDecision"/>
+</Commands>
+```
+
+that will open the following modal editor 
+
+```xml
+<Modals>
+  <Modal Id="c-coach-contracting-email" Width="800px" EventTarget="c-editor-funding-decision" PrependerId="c-activity-alerts-list" SaveLabel="action.email">
+    <Title>Send notification about start of contracting process to Coach</Title>
+  </Modal>
+</Modals>
+```
+
+#### The `Augment` element
+
+The `Augment` element opens a modal editor window for editing a transclusion part of a document.
+
+*To be explained*
+
+
+#### The `Open` element
+
+The `Open` element triggers an HTML form element submission. This is convenient for instance to invoke a service and show the result in a new window.
+
+Example :
+
+```xml
+<Commands>
+  <Open Key="btn.contract-list" Resource="~/funding-decision/contracts" Form="c-open-form"/>
+</Commands>
+```
 
 ### The `Bindings` section element
 
