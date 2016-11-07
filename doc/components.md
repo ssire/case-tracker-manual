@@ -1,4 +1,4 @@
-# Case Tracker UI Components
+# UI Components XML vocabulary
 
 This chapter describes the principal widgets (or UI components) composing the case tracker user interface. The widget generation process starts by generating a model of the page using the widget XML vocabulary. This vocabulary is often interleaved with page content extracted from the database too. It is then transformed to HTML by the pipeline view step and sent to the optional epilogue step or directly copied to the response.
 
@@ -23,8 +23,10 @@ Then application specific widgets are defined into *lib/widgets.xsl*. It can als
 
 Finally more specific widgets or vocabularies are implemented into module XSLT files (e.g. *modules/persons/search.xsl*, *modules/workflow/workflow.xsl*, *modules/management/management.xsl*, etc.). So basically these XSLT files start with :
 
-    <xsl:include href="../../lib/commons.xsl"/>
-    <xsl:include href="../../lib/widgets.xsl"/>
+```xml
+<xsl:include href="../../lib/commons.xsl"/>
+<xsl:include href="../../lib/widgets.xsl"/>
+```
 
 The underlying philosophy is that as you make more and more mature and generic widget vocabulary, it should be moved *upwards* to widgets.xsl and ultimately to commons.xsl.
 
@@ -67,19 +69,21 @@ The `Accordion` element defines an accordion widget. It contains one `Document` 
 
 Example :
 
-    <Accordion CurrentStatus="1">
-      <Document Status="current" class="case" Id="case-init">
-        <Name loc="workflow.title.case-init">case-init</Name>
-        <Resource>../../information.blend?goal=read</Resource>
-        <Template>../../../templates/case-information?goal=read&amp;smegrant=1&amp;kamgrant=1</Template>
-        <Actions>
-          <Edit>
-            <Resource>../../information.xml?goal=update</Resource>
-            <Template>../../../templates/case-information?goal=update&amp;smegrant=1&amp;kamgrant=1</Template>
-          </Edit>
-        </Actions>
-      </Document>
-    </Accordion>
+```xml
+<Accordion CurrentStatus="1">
+  <Document Status="current" class="case" Id="case-init">
+    <Name loc="workflow.title.case-init">case-init</Name>
+    <Resource>../../information.blend?goal=read</Resource>
+    <Template>../../../templates/case-information?goal=read&amp;smegrant=1&amp;kamgrant=1</Template>
+    <Actions>
+      <Edit>
+        <Resource>../../information.xml?goal=update</Resource>
+        <Template>../../../templates/case-information?goal=update&amp;smegrant=1&amp;kamgrant=1</Template>
+      </Edit>
+    </Actions>
+  </Document>
+</Accordion>
+```
 
 Illustration (all bars collapsed) :
 
@@ -97,22 +101,23 @@ The `Actions` element defines the commands that can be applied to the document a
 
 Example :
 
-    <Document Status="current" class="case" Id="case-init">
-      <Name loc="workflow.title.case-init">case-init</Name>
-      <Resource>../../information.blend?goal=read</Resource>
-      <Template>../../../templates/case-information?goal=read&amp;smegrant=1&amp;kamgrant=1</Template>
-      <Actions>
-        <Edit>
-          <Resource>../../information.xml?goal=update</Resource>
-          <Template>../../../templates/case-information?goal=update&amp;smegrant=1&amp;kamgrant=1</Template>
-        </Edit>
-      </Actions>
-    </Document>
+```xml
+<Document Status="current" class="case" Id="case-init">
+  <Name loc="workflow.title.case-init">case-init</Name>
+  <Resource>../../information.blend?goal=read</Resource>
+  <Template>../../../templates/case-information?goal=read&amp;smegrant=1&amp;kamgrant=1</Template>
+  <Actions>
+    <Edit>
+      <Resource>../../information.xml?goal=update</Resource>
+      <Template>../../../templates/case-information?goal=update&amp;smegrant=1&amp;kamgrant=1</Template>
+    </Edit>
+  </Actions>
+</Document>
+```
 
 Illustration (with a document displayed in read-only mode) :
 
 ![Document example](../images/widgets/Document.png "Document example")
-
 
 ### The `Actions` element
 
@@ -120,12 +125,14 @@ The `Actions` element inside the `Document` element defines a list of actions to
 
 Example : 
 
-    <Actions>
-      <Edit>
-        <Resource>../../information.xml?goal=update</Resource>
-        <Template>../../../templates/case-information?goal=update&amp;smegrant=1&amp;kamgrant=1</Template>
-      </Edit>
-    </Actions>
+```xml
+<Actions>
+  <Edit>
+    <Resource>../../information.xml?goal=update</Resource>
+    <Template>../../../templates/case-information?goal=update&amp;smegrant=1&amp;kamgrant=1</Template>
+  </Edit>
+</Actions>
+```
 
 Illustration :
 
@@ -147,10 +154,12 @@ For instance with *Forward="submit"*, a `1/funding-request.xml?goal=read` docume
 
 Example :
 
-    <Edit Forward="submit">
-      <Resource>funding-request.xml?goal=update</Resource>
-      <Template>../../../templates/funding-request?goal=update</Template>
-    </Edit>
+```xml
+<Edit Forward="submit">
+  <Resource>funding-request.xml?goal=update</Resource>
+  <Template>../../../templates/funding-request?goal=update</Template>
+</Edit>
+```
 
 Illustration (menu added after clicking on an Edit action) :
 
@@ -166,11 +175,13 @@ The `@Status` attribute is the current status while the `@Argument` attribute is
 
 Example : 
 
-    <ChangeStatus Status="4" TargetEditor="c-alert">
-      <Status Action="increment" Argument="1" To="5"/>
-      <Status Action="decrement" Argument="2" To="2"/>
-      <Status Action="increment" Argument="5" To="9"/>
-    </ChangeStatus>
+```xml
+<ChangeStatus Status="4" TargetEditor="c-alert">
+  <Status Action="increment" Argument="1" To="5"/>
+  <Status Action="decrement" Argument="2" To="2"/>
+  <Status Action="increment" Argument="5" To="9"/>
+</ChangeStatus>
+```
 
 Illustration :
 
@@ -184,10 +195,12 @@ The `Cartouche` element  defines the window title (`Window` element) and the pag
 
 Example : 
 
-    <Cartouche>
-      <Window>BIOVALID coaching activity (18/03/2015)</Window>
-      <Title LinkToCase="907">Clinical validation of the DiviTum assay in two high profile clinical ...</Title>
-    </Cartouche>
+```xml
+<Cartouche>
+  <Window>BIOVALID coaching activity (18/03/2015)</Window>
+  <Title LinkToCase="907">Clinical validation of the DiviTum assay in two high profile clinical ...</Title>
+</Cartouche>
+```
 
 ## The `Commands` widget
 
@@ -203,14 +216,16 @@ Actually this is a logical element that has several implemenations depending on 
 
 Example (from *Community > Person profile* search page) :
 
-    <Modal Id="c-item-viewer" Goal="read">
-      <Template>templates/person?goal=read</Template>
-      <Commands>
-        <Delete/>
-        <Button Id="c-modify-btn" loc="action.edit"/>
-        <Close/>
-      </Commands>
-    </Modal>
+```xml
+<Modal Id="c-item-viewer" Goal="read">
+  <Template>templates/person?goal=read</Template>
+  <Commands>
+    <Delete/>
+    <Button Id="c-modify-btn" loc="action.edit"/>
+    <Close/>
+  </Commands>
+</Modal>
+```
     
 Illustration :
 
@@ -224,12 +239,13 @@ Basically a command is generated as an HTML `button` element with micro-format i
 
 For instance here is the XSLT rule that generates the Close command in a Modal widget from the previous example :
 
-    <xsl:template match="Close" mode="Modal">
-      <button class="btn" data-command="trigger" data-target="{ancestor::Modal/@Id}" 
-              data-trigger-event="axel-cancel-edit" loc="action.close"
-              >Fermer</button>
-    </xsl:template>
-
+```xml
+<xsl:template match="Close" mode="Modal">
+  <button class="btn" data-command="trigger" data-target="{ancestor::Modal/@Id}" 
+          data-trigger-event="axel-cancel-edit" loc="action.close"
+          >Fermer</button>
+</xsl:template>
+```
 
 ## The `Display` (top level) widget
 
@@ -252,7 +268,7 @@ Illustration :
 
 ## The `Formular` widget
 
-> In:  lib/search.xsl (stage page), lib/widgets.xsl (search pages), modules/stats/stats.xsl (stats pages)
+> In: lib/search.xsl (stage page), lib/widgets.xsl (search pages), modules/stats/stats.xsl (stats pages)
 
 The formular widget looks like a search mask with a menu containing one or more command buttons at the bottom. It contains at least one command button to submit the search request. It is commonly associated with a result table updated either directly from the HTML fragments returned by the request response, or using the Ajax JSON table protocol as described in the [Ajax protocols](./ajax.md) chapter. The formular is loaded when the page is ready.
 
@@ -275,19 +291,21 @@ The `Submission` attribute adds three commands to the left side of the meny to s
 
 Example (from Community > Person profile search page) :
 
-    <Formular Id="editor" Width="680px">
-      <Template loc="form.title.persons.search">templates/search/persons</Template>
-      <Submission Controller="persons">persons/submission?name=SearchPersonsRequest</Submission>
-      <Commands>
-        <Create Target="c-item-creator">
-          <Controller>persons/add?next=redirect</Controller>
-          <Label loc="action.add.person">Ajouter une personne</Label>
-        </Create>
-        <Save Target="editor" data-src="persons" data-replace-target="results" data-save-flags="disableOnSave silentErrors" onclick="javascript:$('#c-busy').show()">
-          <Label style="min-width: 150px" loc="action.search">Search</Label>
-        </Save>
-      </Commands>
-    </Formular>
+```xml
+<Formular Id="editor" Width="680px">
+  <Template loc="form.title.persons.search">templates/search/persons</Template>
+  <Submission Controller="persons">persons/submission?name=SearchPersonsRequest</Submission>
+  <Commands>
+    <Create Target="c-item-creator">
+      <Controller>persons/add?next=redirect</Controller>
+      <Label loc="action.add.person">Ajouter une personne</Label>
+    </Create>
+    <Save Target="editor" data-src="persons" data-replace-target="results" data-save-flags="disableOnSave silentErrors" onclick="javascript:$('#c-busy').show()">
+      <Label style="min-width: 150px" loc="action.search">Search</Label>
+    </Save>
+  </Commands>
+</Formular>
+```
 
 Illustration :
 
@@ -295,15 +313,17 @@ Illustration :
 
 Second example (from Statistics > Cases page) : 
 
-    <Formular Id="editor">
-      <Template>../templates/stats-cases</Template>
-      <Commands>
-        <Command Allow="g:admin-system g:business-intelligence" Name="submit" Action="export?t=anonymized" Form="e1" W="3" Offset="1">Anonymized Exportation</Command>
-        <Command Allow="g:admin-system" Name="submit" Action="export?t=all" Form="e2" W="2">All Exportation</Command>
-        <Command Allow="g:admin-system" ExcelAllow="g:admin-system" Name="submit" Action="export?t=list" Form="e3" W="2">Contact List</Command>
-        <Command Allow="g:admin-system g:business-intelligence" Name="stats" Action="filter" W="2">Statistics</Command>
-      </Commands>1
-    </Formular> 
+```xml
+<Formular Id="editor">
+  <Template>../templates/stats-cases</Template>
+  <Commands>
+    <Command Allow="g:admin-system g:business-intelligence" Name="submit" Action="export?t=anonymized" Form="e1" W="3" Offset="1">Anonymized Exportation</Command>
+    <Command Allow="g:admin-system" Name="submit" Action="export?t=all" Form="e2" W="2">All Exportation</Command>
+    <Command Allow="g:admin-system" ExcelAllow="g:admin-system" Name="submit" Action="export?t=list" Form="e3" W="2">Contact List</Command>
+    <Command Allow="g:admin-system g:business-intelligence" Name="stats" Action="filter" W="2">Statistics</Command>
+  </Commands>1
+</Formular> 
+```
 
 Note that in that case the `Template` element does not have a `@loc` attribute since the title is directly inside the formular. 
 
@@ -331,16 +351,18 @@ The modal editor windows contain a formular for presenting and/or editing applic
 
 Example :
 
-    <Modal Id="c-nologin-editor" data-backdrop="static" data-keyboard="false">
-      <Name>Creation of a user account</Name>
-      <Template>templates/account?goal=create</Template>
-      <Commands>
-        <Save>
-          <Label>Create</Label>
-        </Save>
-        <Cancel/>
-      </Commands>
-    </Modal>
+```xml
+<Modal Id="c-nologin-editor" data-backdrop="static" data-keyboard="false">
+  <Name>Creation of a user account</Name>
+  <Template>templates/account?goal=create</Template>
+  <Commands>
+    <Save>
+      <Label>Create</Label>
+    </Save>
+    <Cancel/>
+  </Commands>
+</Modal>
+```
 
 The `Name` element is the modal window title to appear in the header.
 
@@ -407,24 +429,26 @@ It is actually used to implement the workflow tabular view (case and activity wo
 
 Example :
 
-    <Tabs>
-      <Tab Id="users" class="active">
-          <Controller>management/users</Controller>
-          <Name>Users</Name>
-          <h2>Instructions to administrators</h2>
-          <p>Start by clicking on a tab on the left to do something...</p>
-      </Tab>
-      <Tab Id="roles">
-          <Controller>management/roles</Controller>
-          <Name>Roles</Name>
-      </Tab>
-      <Tab Id="login">
-          <Controller>management/login</Controller>
-          <Name>Login</Name>
-      </Tab>
-      ...
-    </Tabs>
-            
+```xml
+<Tabs>
+  <Tab Id="users" class="active">
+      <Controller>management/users</Controller>
+      <Name>Users</Name>
+      <h2>Instructions to administrators</h2>
+      <p>Start by clicking on a tab on the left to do something...</p>
+  </Tab>
+  <Tab Id="roles">
+      <Controller>management/roles</Controller>
+      <Name>Roles</Name>
+  </Tab>
+  <Tab Id="login">
+      <Controller>management/login</Controller>
+      <Name>Login</Name>
+  </Tab>
+  ...
+</Tabs>
+```
+ 
 Illustration : 
 
 ![Tabs example](../images/widgets/Tabs.png "Tabs example")
@@ -441,10 +465,12 @@ The optional `Controller` element contains the address of the resource to load w
 
 Example (Roles tab in Admin page):
 
-    <Tab Id="roles">
-      <Controller>management/roles</Controller>
-      <Name>Roles</Name>
-    </Tab>
+```xml
+<Tab Id="roles">
+  <Controller>management/roles</Controller>
+  <Name>Roles</Name>
+</Tab>
+```
 
 ## The `Window` widget
 
@@ -462,18 +488,20 @@ It defines the timeline to be printed on top of the page, just below the title. 
 
 Example :
 
-      <Workflow W="10" Name="Activity">
-          <Step Display="step" Status="current" StartDate="13/01/2016" Num="1"/>
-          <Step Display="step" StartDate="" Num="2"/>
-          <Step Display="step" StartDate="" Num="3"/>
-          <Step Display="step" StartDate="" Num="4"/>
-          <Step Display="step" StartDate="" Num="5"/>
-          <Step Display="step" StartDate="" Num="7"/>
-          <Step Display="step" StartDate="" Num="8"/>
-          <Step Display="state" StartDate="" Num="9"/>
-          <Step Display="state" StartDate="" Num="10"/>
-          <Step Display="state" StartDate="" Num="11"/>
-      </Workflow>
+```xml
+<Workflow W="10" Name="Activity">
+    <Step Display="step" Status="current" StartDate="13/01/2016" Num="1"/>
+    <Step Display="step" StartDate="" Num="2"/>
+    <Step Display="step" StartDate="" Num="3"/>
+    <Step Display="step" StartDate="" Num="4"/>
+    <Step Display="step" StartDate="" Num="5"/>
+    <Step Display="step" StartDate="" Num="7"/>
+    <Step Display="step" StartDate="" Num="8"/>
+    <Step Display="state" StartDate="" Num="9"/>
+    <Step Display="state" StartDate="" Num="10"/>
+    <Step Display="state" StartDate="" Num="11"/>
+</Workflow>
+```
 
 Illustration :
 
@@ -481,12 +509,14 @@ Illustration :
 
 Note that the step names MUST also be part of the `Display` element in a first-level `Dictionary` element that gives the name of each status identified by its number *Id*. 
 
-    <Dictionary>
-      <WorkflowStatus Name="Activity" W="10">
-          <Status>
-              <Id>1</Id>
-              <Name>Coach assignment</Name>
-          </Status>
-          ...
-      </WorkflowStatus>
-    </Dictionary>
+```xml
+<Dictionary>
+  <WorkflowStatus Name="Activity" W="10">
+      <Status>
+          <Id>1</Id>
+          <Name>Coach assignment</Name>
+      </Status>
+      ...
+  </WorkflowStatus>
+</Dictionary>
+```

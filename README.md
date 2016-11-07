@@ -48,6 +48,10 @@ The other functionalities not in that list like search or data exportation tools
 
 The client-side components encapsulate each front-end functionality, mainly client-server communication (Ajax protocol) and user interaction, into javascript objects (mainly commands, but also bindings, plugins, filters) which can be inserted into the application page using specific _data-*_ (aka micro-format instructions) attributes. This way it is easy to develop and maintain Javascript code on one side and to instantiate it from XSLT transformations that generate the views of the application.
 
-- [Commands](./doc/commands.md) :  Javascript commands to communicate with the server
+- Javascript objects
+  - [Plugins](./doc/plugins.md)
+  - [Filters](./doc/filters.md)
+  - [Commands](./doc/commands.md)
+  - [Bindings](./doc/bindings.md)
 - [UI components](./doc/components.md) :  UI components (aka *web components*)
 

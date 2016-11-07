@@ -15,7 +15,7 @@ The application configuration collection is the collection that contains most of
 **Binding** (AXEL client-side Javascript object)
 
 A binding is a Javascript object implementing a binding in the AXEL Javascript library. Most bindings are used to constrain the user input on one or more fields they are attached to with a *data-binding* microformat instruction. Supergrid allows to configure some bindings directly on the XML formular specification.
- 
+
 **Case resource**
 
 The case resource is the document that contains all the XML model for a case, including its activities. By convention the case resource is a `case.xml` file stored inside a `cases/YYYY/MM` collection inside the application data collection. *YYYY* and *MM* correspond respectively to the year and the month of a significant date of case history (e.g. case creation date, case call date, etc.). 
@@ -27,6 +27,14 @@ A command is a Javascript object implementing a command in the AXEL Javascript l
 **eXist-DB**
 
 [eXist-DB](http://exist-db.org) is the native XML database for running a case tracker application. The project is maintained on [github](https://github.com/exist-db/exist/).
+
+**Field handle**
+
+Formular templates are turned into in-page editor by the AXEL and AXEL-FORMS libraries. For each primitive input field associated to a plugin, the plugin generates an HTML fragment implementing the input widget, the field handle is the root of this fragment.
+
+**Host element**
+
+The HTML element that serves as a host for a binding or a command. The link is declared as a *data-binding* or *data-command* attribute directly on the host element.
 
 **Plugin** (AXEL client-side Javascript object)
 
@@ -64,3 +72,8 @@ The formulars loaded into the web browser are written using the [XTiger XML temp
 **XSLT Blender**
 
 The XSLT blender is the XSLT transformation that turns database XML documents into XML documents for read-only viewing in a read-only formular. That transformation is required to transform documents that contain fragments created with a rich text input field. These fragment must be transformed in a suitable HTML format for being displayed by the *html* plugin. The XSLT blender is implemented by the `views/blend.xsl` file. By convention XML documents served with the XSLT blender use a resource URL with the *.blend* suffix.
+
+**XML input content model**
+
+The XML representation of a document for loading into an editor.
+
