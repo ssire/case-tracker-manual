@@ -9,7 +9,7 @@ The case tracker pilote is a reference application which can be customized to cr
 
 The easiest way to create a case management application from the case tracker is to fork it and start a new version (*source code depot will be available soon*).
 
-The case tracker pilote is a workbench for the **XML full-stack programming** architecture. It has some flavors of the **specification driven** programming style because a significant portion of application code interprets specifications written with custom XML  vocabularies. In this regards the code base can be used to create an eco-system for business applications that share some common XML vocabularies and their underlying implementation libraries (XQuery modules, XSLT views).
+The case tracker pilote is a workbench for the **XML full-stack programming** architecture. It has some flavors of the **specification driven** programming style because a significant portion of application code interprets specifications written with custom XML  vocabularies. In this regards the code base can be used to create *an eco-system for business applications* that share some common XML vocabularies and their underlying implementation libraries (XQuery modules, XSLT views).
 
 > This is a work in progress, initiated for the Platinn coaching application in Switzerland in 2013/2014, and continued under the auspices of the Coachcom 2020 project from september 2014 to november 2016. Coachcom is a coordination and support action (H2020-635518; 09/2014-08/2016) selected by the European Commission to develop a framework for the business innovation coaching offered to the beneficiaries of the Horizon 2020 SME Instrument.
 
@@ -31,7 +31,11 @@ The main Case Tracker components can be use to build case management application
 
 - [Workflow](./doc/workflow.md) : user-driven and data-driven workflows
 - Data types : application data types to generate input selectors
-- [Supergrid](./doc/supergrid.md) : grid-base form generator
+- Supergrid : grid-base form generator
+  - [Installation and use](./doc/supergrid-use.md)
+  - [Specification language](./doc/supergrid-spec.md)
+  - Search mask extension
+  - Feedback questionnaire extension
 - [Alerts](./doc/alerts.md) : todo list generation and notifications
 - [Statistics](./doc/statistics.md) : statistics and graphs rendering
 - [Services](./doc/services.md) :  library for services integration
