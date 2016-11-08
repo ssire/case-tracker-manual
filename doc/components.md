@@ -1,10 +1,12 @@
-# UI Components XML vocabulary
+# User interface widgets vocabulary
 
-This chapter describes the principal widgets (or UI components) composing the case tracker user interface. The widget generation process starts by generating a model of the page using the widget XML vocabulary. This vocabulary is often interleaved with page content extracted from the database too. It is then transformed to HTML by the pipeline view step and sent to the optional epilogue step or directly copied to the response.
+This chapter describes the principal widgets (or UI components) composing the case tracker user interface. 
 
-The resulting HTML contains _class_, _id_ and/or_micro-format_ attributes (i.e. `data-*`) which are used by javascript to implement the user interface behavior. In particular the special `data-command="name"` attribute bind an HTML fragment to a command described in the [Commands](./commands.md) chapter.
+The widget generation process starts by generating a *page model* using the widget XML vocabulary. This vocabulary is often interleaved with page content extracted from the database too. It is then transformed to HTML by the pipeline view step and sent to the optional epilogue step or directly copied to the response.
 
-You can see the widget composition of a page by adding the `.xml` suffix at the end of its URL. (e.g. _/cases/100/activities/1.xml_).
+The resulting HTML contains _class_, _id_ and _microformat_ attributes (i.e. `data-*`) which are used to connect HTML *host elements* with a combination of Javascript [Commands](./commands.md), [Plugins](./doc/plugins.md), [Filters](./doc/filters.md) and [Bindings](./doc/bindings.md) that implement the widget behavior.
+
+You can see the page model by adding the `.xml` suffix at the end of the resource URL (e.g. _/cases/100/activities/1.xml_).
 
 The widgets are presented in alphabetical order, but basically the case tracker is made of top level widgets which are used to render the different pages :
 
@@ -15,13 +17,13 @@ The widgets are presented in alphabetical order, but basically the case tracker 
 
 ## XSLT and Javascript code layout
 
-A case tracker design rule is to share a maximum of widget vocabulary bewteen pages. 
+A case tracker design rule is to share a maximum of widgets vocabulary bewteen pages :
 
-The most generic vocabulary is defined into *lib/commons.xsl*. It should be reused beyond the case tracker to make similar applications. 
+* `lib/commons.xsl` groups the most mature or generic widgets. It can be reused beyond the case tracker to make similar applications;
+* `lib/widgets.xsl` groups less mature or application specific widgets. It can also be reused with small adaptations to make similar applications;
+* finally per-module XSLT files (e.g. *modules/persons/search.xsl*, *modules/workflow/workflow.xsl*, *modules/management/management.xsl*, etc.) group specific widgets.
 
-Then application specific widgets are defined into *lib/widgets.xsl*. It can also be reused with small adaptations to make similar applications. 
-
-Finally more specific widgets or vocabularies are implemented into module XSLT files (e.g. *modules/persons/search.xsl*, *modules/workflow/workflow.xsl*, *modules/management/management.xsl*, etc.). So basically these XSLT files start with :
+Basically the module specific XSLT files start with :
 
 ```xml
 <xsl:include href="../../lib/commons.xsl"/>
@@ -34,7 +36,7 @@ Reciprocally the Javascript widget code (mainly made of AXEL plugins, filters, b
 
 The CSS files for the UI Components are not specifically organized yet (this is a work in progress), in addition to the bootstrap CSS files you can find several CSS files in the *resources/css* folder.
 
-**NOTE**: actually *resources/lib/widgets.js* is still under construction and is splitted into *resources/lib/extensions.js* and *resources/lib/workflow.js*.
+**NOTE**: actually *resources/lib/widgets.js* is still under construction and is still splitted between *resources/lib/extensions.js* and *resources/lib/workflow.js*.
 
 ## User interface conventions
 

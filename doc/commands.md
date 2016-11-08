@@ -1,20 +1,20 @@
 # Case Tracker Javascript commands
 
-Commands are Javascript objects bound to an HTML user interface element like a button or a drop-down list with a `data-command` microformat attribute. They can be directly invoked client-side by user interaction or indirectly as a side effect of an Ajax response generated server-side.
+Commands are Javascript objects bound to an HTML element or *host element*, like a button or a drop-down list, with a `data-command` microformat attribute. They can be directly invoked client-side by user interaction or indirectly as a side effect of an Ajax response generated server-side.
 
-In **client-side invocation** the commmand is triggered by user clicking the command host element.
+In **client-side invocation** the commmand is triggered by user clicking the host element.
 
-In **server-side invocation** the command is triggered by returning an Ajax response containing a _forward_ element as explained in the [Ajax protocols](./ajax.md) chapter.
+In **server-side invocation** the command is triggered by returning an Ajax response containing a `forward` element as explained in the [Ajax protocols](./ajax.md) chapter.
 
 Commands are implemented in different files :
 
-* `resources/lib/extensions.js` contains generic commands
+* `resources/lib/extensions.js` contains generic commands (TODO: rename to `widget.js`)
 * `resources/lib/workflow.js` contains commands specific to the workflow accordion view, they are instantiated in `modules/workflow/workflow.xsl`
 
-The *Implements* annotation of each command presentation below gives some indication about the XML vocabulary it implements. You can get more details in the different XML vocabulary chapters :
+Commands often implement one or more elements from a domain specific language. You can get more details in the corresponding XML vocabulary chapters :
 
-* [UI components XML vocabulary](./components.md) for vocabulary from workflow.xsl, widgets.xsl or commons.xsl
-* [Workflow](./workflow.md) for vocabulary from application.xml in workflow.xsl
+* [UI widgets vocabulary](./components.md) for vocabulary from workflow.xsl, widgets.xsl or commons.xsl
+* [Workflow specification language](./workflow.md) for vocabulary from application.xml in workflow.xsl
 * [Supergrid specification language](./supergrid-spec.md) for vocabulary from supergrid.xsl
 
 ## The `acc-drawer` command

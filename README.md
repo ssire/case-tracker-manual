@@ -31,7 +31,7 @@ The main Case Tracker components can be use to build case management application
 
 - [Workflow](./doc/workflow.md) : user-driven and data-driven workflows
 - Data types : application data types to generate input selectors
-- Supergrid : grid-base form generator
+- Supergrid grid-base form generator
   - [Installation and use](./doc/supergrid-use.md)
   - [Specification language](./doc/supergrid-spec.md)
   - Search mask extension
@@ -46,12 +46,13 @@ The other functionalities not in that list like search or data exportation tools
 
 **Client-side components**
 
-The client-side components encapsulate each front-end functionality, mainly client-server communication (Ajax protocol) and user interaction, into javascript objects (mainly commands, but also bindings, plugins, filters) which can be inserted into the application page using specific _data-*_ (aka micro-format instructions) attributes. This way it is easy to develop and maintain Javascript code on one side and to instantiate it from XSLT transformations that generate the views of the application.
+The client-side components encapsulate each front-end functionality, mainly client-server communication (Ajax protocol) and user interaction, into javascript objects (mainly commands, but also plugins, filters and bindings) which can be inserted into the application page using specific _data-*_ (aka micro-format instructions) attributes. This way it is easy to develop and maintain Javascript code on one side and to instantiate it from XSLT transformations that generate the views of the application.
 
 - Javascript objects
+  - [Commands](./doc/commands.md)
   - [Plugins](./doc/plugins.md)
   - [Filters](./doc/filters.md)
-  - [Commands](./doc/commands.md)
   - [Bindings](./doc/bindings.md)
-- [UI components](./doc/components.md) :  UI components (aka *web components*)
+- User interface components (sort of *web components*)
+  - [UI widgets vocabulary](./doc/components.md)
 
