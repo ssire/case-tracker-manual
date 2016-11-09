@@ -12,7 +12,9 @@ A formular  specification skeleton is presented below :
   <Verbatim>
     1 or more <xt:component>
   </Verbatim>
-  1 or more <Include>, <Row>, <Separator> or <site:conditional>
+  ...
+  Grid section : 1 or more <Include>, <Row>, <Separator>, <site:conditional> or <Use>
+  ...
   <Modals>
     1 or more <Modal>
   </Modal>
@@ -26,7 +28,7 @@ A formular  specification skeleton is presented below :
     </Enforce>
   </Bindings>
   <Plugins>
-    1 or more plugin among <Constant>, <Date>, <Input>, <MultiText>, <Photo>, <Plain>, <Text>, <RichText>
+    1 or more plugin <Constant>, <Date>, <Input>, <MultiText>, <Plain>, <Text>, <RichText>
   </Plugins>
   <Hints>
     1 or more <Hint>
@@ -34,19 +36,21 @@ A formular  specification skeleton is presented below :
 </Form>
 ```
 
+Everything between the `Verbatim` and the `Modals` elements define the **Grid section**, it defines the formular visual content.
+
 The `Commands`, `Bindings`, `Plugins` and `Hints` sections bind objects with user interface elements declared in the previous sections using the key pattern.
 
 ### The `@Key` pattern
 
-Most of the objects declared in Bindings, Commands, Hints or Plugins sections are hosted on a user interface element declared somewhere else in the formular specification (e.g. a *Plugin* is set on a *Field*). The association between the host user interface element and the object works with a common `@Key` attribute : 
+Elements declared in the `Bindings`, `Commands`, `Hints` or `Plugins` sections are hosted on a user interface element declared in the Grid section (e.g. a *Plugin* is set on a *Field*). The association works with a common `@Key` attribute : 
 
 * the host element defines its own `@Key`
 * the associated object targets the host with a similar `@Key`
 * some objects also support a `@Prefix` attribute to target all the hosts with a key starting with the prefix
 
-Note that a *current limitation* is that two keys set on two host elements should not be mutually inclusive (i.e. part of the other)!
+A key may not be unique in a given formular to share some declarations. 
 
-Note that a key may not be unique in a given formular to share some declarations.
+*Current limitation*: two keys set on two host elements should not be mutually inclusive (i.e. part of the other)!
 
 ### Common attributes
 
@@ -138,7 +142,17 @@ which can be instantiated anywhere in a `Row` or a `Cell` with :
 <Use Tag="Name" TypeName="person_name"/>
 ```
 
-## The `Row` element
+## The Grid section
+
+The formular grid section covers all the children of the top-level `Form` element which are not in a `Verbatim`, `Bindings `, `Modals`, `Commands`, `Plugins` or `Hints` sections. 
+
+These elements generate the grid-layout and fill the grid with the visible content and input fields.
+
+### Container elements 
+
+The container elements define grid layout containers. They can be nested or contain other terminal elements.
+
+#### The `Row` element
 
 > Contained in: Form, Cell
 >
@@ -148,14 +162,7 @@ A `Row` element stacks one or more `Field` elements in lines of a maximum 12 gri
 
 The field placement algorithm in a row works as follows: if there are enough grid units available to contain the full field in the current line, then the field is inserted into the line, otherwise a new line is created that starts with the field. Note that except on the first line which has no left margin set, you must explicitely set the left margin to 0 on a new field on a new line using the `L="0"` attribute of the `Field` element. Alternatively you can also use a new `Row` element each time you want to create a line. This more explicit version is more verbose.
 
-
-## The `Separator` element
-
-> Contained in: Form
-
-The `Separator` draws a horizontal separation line
-
-## The `Cell` element
+#### The `Cell` element
 
 > Contained in: Row
 >
@@ -183,8 +190,62 @@ Example :
   ...
 </Cell>
 ```
+### Terminal elements
 
-## The `Field` element
+The terminal elements do not contain other elements. They defined graphical objects and/or widgets to be shown inisde the grid containers.
+
+#### The `Button` element
+
+> Contained in: Row, Cell, site:conditional
+>
+> Contains: #text
+
+The `Button` element creates an HTML button element. It is mostly used to execute an associated command as described in the section on *Commands* below.
+
+The `@Key` identifies the button for associating a command.
+
+Optional attributes :
+
+* `@W` specifies the button width in in grid units (defaults to 12);
+* `@StickyClass` (*DEPRECATED* ?) sets the whole value of the button class attribute; 
+* `@Class` adds extra class(es) to the button, this is not compatible with the use of a *StickyClass* attribute;
+* `@Id` or `@id` sets the id of the button, use either one but not both;
+* `@loc` and `@style` are transferred to the HTML button element.
+
+#### The `Constant` element
+
+> Contained in: Row, Cell, site:conditional
+>
+> Contains: empty
+
+The `Constant` element shows an image. This can be a photo uploaded with a `Photo` element, when viewing the formular in read-only mode.
+
+To use it in the Grid section it must have a `@Media` attribute set to *image* (see also the `Constant` element in the `Plugins` sections for other media usage).
+
+Mandatory attributes :
+
+* @Media="image" : displays an image using AXEL 'constant' plugin
+  * the image URL will be obtained by concatenating *$xslt.base-url* with the optional `@Base` path and with the XML input content
+  * empty XML input content will result in showing `{$xslt.base-url}static/cctracker/images/identity.png`
+  * sets the *img-polaroid* class on the HTML `img` tag
+
+Optional attributes :
+
+* `@Base` path to add before the XML input content, and after the *$xslt.base-url*, to get the image address (LIMITATION: must be an absolute path starting with /)
+
+Note that the `@Base` value is added after the *$xslt.base-url* path which is evaluated when supergrid generates the formular template at installation time (and not at runtime).
+
+Note that the `@Base` is concatenated with the XML input content, which may also contain some other path segments. By convention in the case tracker photos are stored with the *images/* path in their content (e.g. `<Photo>images/12.jpeg</Photo>`)
+
+Example :
+
+```xml
+<Constant Tag="Photo" Media="image" Base="/persons/"/>
+```
+
+With this configuration the XML input content `<Photo>images/12.jpeg</Photo> will result in displaying the image at */persons/images/12.jpeg* if the formular was installed in *prod* (or *test*) mode (i.e. with $xsl.base-url="/"), and the image at */exist/projets/cctracker/persons/images/12.jpeg* if the formular was installed in *dev* mode.
+
+#### The `Field` element
 
 The `Field` element is the placeholder for a label followed by a data entry field.
 
@@ -206,25 +267,57 @@ Optional attributes (see *Common attributes*):
 * `@W`
 * `@L`
 
-## The `Button` element
+#### The `Photo` element
 
 > Contained in: Row, Cell, site:conditional
 >
-> Contains: #text
+> Contains: empty
 
-The `Button` element creates an HTML button element. It is mostly used to execute an associated command as described in the section on *Commands* below.
+The `Photo` element instantiates a `photo` plugin for uploading images to the server.
 
-The `@Key` identifies the button for associating a command.
+Since the `photo` plugin does not support a read-only mode you must substitute the `Photo` element by another one if you want to show a photo in a read-only formular. You can use the `Constant` element for that purpose with an *image* media type (see above).
 
-Optional attributes :
+The `photo` plugin requires two services to function :
 
-* `@W` specifies the button width in in grid units (defaults to 12);
-* `@StickyClass` (*DEPRECATED* ?) sets the whole value of the button class attribute; 
-* `@Class` adds extra class(es) to the button, this is not compatible with the use of a *StickyClass* attribute;
-* `@Id` or `@id` sets the id of the button, use either one but not both;
-* `@loc` and `@style` are transferred to the HTML button element.
+* a photo upload service to POST photo files
+* a photo read service to GET photo files
 
-## The `Use` element
+Both services must be declared in the application mapping. Note that actually the case tracker is using a pre-define module from the *oppistore* 
+code depot to implement the photo upload and read services.
+
+Mandatory attributes :
+
+* the `@Base` attribute contains the path leading to the photo read service (LIMITATION: must be an absolute path starting with /) 
+* the `@Controller` attribute contains the path leading to the photo upload service (LIMITATION: must be an absolute path starting with /) 
+
+Note that the `@Base` and the `@Controller` values are added after the *$xslt.base-url* path which is evaluated when supergrid generates the formular template at installation time (and not at runtime).
+
+Note that the `@Base` is concatenated with the photo address returned by the `photo` plugin, which may also contain some other path segments. By convention in the case tracker photos are stored with the *images/* path in their content (e.g. `<Photo>images/12.jpeg</Photo>`).
+
+Example :
+
+```xml
+<Cell W="4" Class="well">
+  <site:conditional avoid="read" force="true">
+    <Photo Tag="Photo" Base="/persons" Controller="/persons/images"/>
+  </site:conditional>
+  <site:conditional meet="read" force="true">
+    <Constant Tag="Photo" Media="image" Base="/persons/"/>
+  </site:conditional>
+</Cell>
+```
+
+The example shows a `Photo` widget which uploads the images at a */persons/images* photo upload controller (note the absolute path) and which get images files from a controller using a */persons* path prefix (note the absolute path). Consequently the photo upload and read services must be declared in the application mapping on the corresponding paths.
+
+The example uses a `site:conditional` element to replace the `Photo` widget by a `Constant` widget in read-only mode.
+
+#### The `Separator` element
+
+> Contained in: Form
+
+The `Separator` draws a horizontal separation line
+
+#### The `Use` element
 
 > Contained in: Row, Cell, site:conditional
 >
@@ -246,7 +339,7 @@ Example :
 <Use Tag="Address" TypeName="address"/>
 ```
 
-## The `Modals` section element
+## The `Modals` section
 
 ### The `Modal` element
 
@@ -280,7 +373,7 @@ Example :
 </Modal>
 ```
 
-## The `Commands` section element
+## The `Commands` section
 
 > Contains: Add, Augment, Open
 
@@ -346,7 +439,7 @@ Example :
 </Commands>
 ```
 
-## The `Bindings` section element
+## The `Bindings` section
 
 > Contains: Require, Enforce (RegExp)
 
@@ -354,41 +447,44 @@ The `Require` element makes an input field mandatory
 
 The `Enforce` section declares some contraints elements. Actually there is only a `RegExp` constraint.
 
-## The `Plugins` section element
+## The `Plugins` section
 
-> Contains: Constant, Date, Input, MultiText, Photo, Plain, RichText, Text
+> Contains: Constant, Date, Input, MultiText, Plain, RichText, Text
 
-The `Plugins` section declares basic editing widgets. Each widget MUST BE associated with one or more `Field` instances of the formular with the `@Key` pattern.
+The `Plugins` section declares basic editing widgets. 
+
+Each widget MUST BE associated with one or more `Field` instances of the formular with the `@Key` pattern.
 
 Most of the widgets are implemented by an AXEL plugin rendered with a single XTiger `xt:use` element. A few ones may also be complete higher level reusable XTiger components that will be copied to the formular inside one or more XTigger `xt:component` elements.
 
-### The `Constant` widget
+### The `Constant` element
 
-The `Constant` element renders read-only content of different nature depending on the value of its *Media* attribute : 
+The `Constant` element turns a `Field` element into a read-only text field. Be default it displays a single line of text using a `constant` plugin but it can also display an HTML blob using an `html` plugin.
 
-- `@Media="html"` : displays an XHTML blob using AXEL 'html' plugin (XML input in that case is usually generated by the XSLT blender)
-- `@Media="image"` : displays an image using AXEL 'constant' plugin
-  -  the image URL will be obtained by concatanating `$xslt.base-url` with the optional `@Base` relative path that you can declare on the *Constant* element and the XML input
-  - in case of empty XML input it will show `{$xslt.base-url}static/cctracker/images/identity.png`
-  - set the `img-polaroid` class on the HTML `img` tag
+Optional attribute :
 
-### The `Date` widget
+- `@Media` defines how to interpret and dipslay the text content
+  - *text* (default) for plain text
+  - *url* for a web page link
+  - *email*  for an e-mail address
+  - *html* for an XHTML blob using an `html` plugin (in that case XML input is most likely passed through the XSLT blender)
+  - *image* for a photo (ONLY available when used directly into the Grid section outside)
 
-TBD
+The `Constant` element can also be directly inserted into the Grid section as a `Constant` element (instead of a `Field`). This is only available with a `@Media="image"` type to show a photo (see above).
 
-### The `Input` widget
-
-TBD
-
-### The `MultiText` widget
+### The `Date` element
 
 TBD
 
-### The `Photo` widget
+### The `Input` element
 
 TBD
 
-### The `Plain` widget
+### The `MultiText` element
+
+TBD
+
+### The `Plain` element
 
 The `Plain` element implements different types of editors depending on the value of its *Type* attribute :
 
@@ -404,13 +500,13 @@ The `RichText` element generated a complete XTiger component for editing rich te
 
 TBD
 
-### The `Text` widget
+### The `Text` element
 
 The `RichText` element generated a complete XTiger component for editing rich text (paragraphs, lists, etc.).
 
 TBD
 
-## The `Hints` section element
+## The `Hints` section
 
 TBD
 

@@ -73,7 +73,7 @@ The formulars loaded into the web browser are written using the [XTiger XML temp
 
 The XSLT blender is the XSLT transformation that turns database XML documents into XML documents for read-only viewing in a read-only formular. That transformation is required to transform documents that contain fragments created with a rich text input field. These fragment must be transformed in a suitable HTML format for being displayed by the *html* plugin. The XSLT blender is implemented by the `views/blend.xsl` file. By convention XML documents served with the XSLT blender use a resource URL with the *.blend* suffix.
 
-**XML input content model**
+**XML input content**
 
 The XML representation of a document for loading into an editor.
 
