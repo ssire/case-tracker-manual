@@ -12,6 +12,14 @@ The application data collection is the collection that contains all the user gen
 
 The application configuration collection is the collection that contains most of the application configuration and source code files in database. By convention this is the `/db/www/cctracker` collection where *cctracker* is the project name (see below). Actually it contains only few source code files since most of the code is executed from the file system. One notable exception is all the code for scheduled jobs which must be stored in database per eXist-DB construction.
 
+**Application mapping**
+
+The application mapping defines all the REST resource and controller address paths for the application, their rendering pipelines and some coarse grain access rules. It is stored in the `mapping.xml` file which must be deployed into the application configuration. 
+
+**Application settings**
+
+The applications settings defines some high level parameters like the application e-mail server. Each module can define its own parameters. They are stored in the `settings.xml` file which must be deployed into the application configuration.
+
 **Binding** (AXEL client-side Javascript object)
 
 A binding is a Javascript object implementing a binding in the AXEL Javascript library. Most bindings are used to constrain the user input on one or more fields they are attached to with a *data-binding* microformat instruction. Supergrid allows to configure some bindings directly on the XML formular specification.

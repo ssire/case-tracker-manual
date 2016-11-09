@@ -39,7 +39,7 @@ The main Case Tracker components can be use to build case management application
 - [Alerts](./doc/alerts.md) : todo list generation and notifications
 - [Statistics](./doc/statistics.md) : statistics and graphs rendering
 - [Services](./doc/services.md) :  library for services integration
-- Media : template-driven media engine that currently generates and sends e-mail
+- [Media](./doc/media.md) : template-driven media engine that currently generates and sends e-mail
 - Users : users management
 
 The other functionalities not in that list like search or data exportation tools are natively implemented as specific XQuery/XSLT scripts.

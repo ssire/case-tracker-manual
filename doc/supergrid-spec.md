@@ -38,7 +38,7 @@ A formular  specification skeleton is presented below :
 
 Everything between the `Verbatim` and the `Modals` elements define the **Grid section**, it defines the formular visual content.
 
-The `Commands`, `Bindings`, `Plugins` and `Hints` sections bind objects with user interface elements declared in the previous sections using the key pattern.
+The `Commands`, `Bindings`, `Plugins` and `Hints` sections bind objects with user interface elements declared in the Grid section using the key pattern.
 
 ### The `@Key` pattern
 
@@ -243,7 +243,7 @@ Example :
 <Constant Tag="Photo" Media="image" Base="/persons/"/>
 ```
 
-With this configuration the XML input content `<Photo>images/12.jpeg</Photo> will result in displaying the image at */persons/images/12.jpeg* if the formular was installed in *prod* (or *test*) mode (i.e. with $xsl.base-url="/"), and the image at */exist/projets/cctracker/persons/images/12.jpeg* if the formular was installed in *dev* mode.
+With this configuration the XML input content `<Photo>images/12.jpeg</Photo>` will result in displaying the image at */persons/images/12.jpeg* if the formular was installed in *prod* (or *test*) mode (i.e. with $xsl.base-url="/"), and the image at */exist/projets/cctracker/persons/images/12.jpeg* if the formular was installed in *dev* mode.
 
 #### The `Field` element
 

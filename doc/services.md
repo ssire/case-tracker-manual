@@ -20,35 +20,36 @@ The service configuration starts with a `Services` root element containing a `Pr
 
 The self-describing skeleton of a *services.xml* file looks like the following one (a star * indicate 0 or more repetitions and a ? 0 or one) :
 
-    <Services>
-      <Providers> ?
-        <Service> *
-          <Id>service identifier</Id>
-          <Name Lang="en">localized service name</Name>
-          <AuthorizationToken>AUTHORIZATION-TOKEN</AuthorizationToken>
-          <EndPoint> *
-            <Id>endpoint identifier</Id>
-            <Name Lang="en">localized endpoint name</Name>
-          </EndPoint>
-        </Service>
-      </Providers>
-      <Consumers> ?
-        <Service> *
-          ... same as above...
-          <EndPoint> *
-            <Id>end point identifier</Id>
-            <Name Lang="en">localized endpoint name</Name>
-            <URL>... end point URL to invoke service....</URL>
-          </EndPoint>
-        </Service>
-      </Consumers>
-      <Hooks> ?
-        <Service> *
-        ... same as above w/o AuthorizationToken...
-        </Service>
-      </Hooks>
-    </Services>
-
+```xml
+<Services>
+  <Providers> ?
+    <Service> *
+      <Id>service identifier</Id>
+      <Name Lang="en">localized service name</Name>
+      <AuthorizationToken>AUTHORIZATION-TOKEN</AuthorizationToken>
+      <EndPoint> *
+        <Id>endpoint identifier</Id>
+        <Name Lang="en">localized endpoint name</Name>
+      </EndPoint>
+    </Service>
+  </Providers>
+  <Consumers> ?
+    <Service> *
+      ... same as above...
+      <EndPoint> *
+        <Id>end point identifier</Id>
+        <Name Lang="en">localized endpoint name</Name>
+        <URL>... end point URL to invoke service....</URL>
+      </EndPoint>
+    </Service>
+  </Consumers>
+  <Hooks> ?
+    <Service> *
+    ... same as above w/o AuthorizationToken...
+    </Service>
+  </Hooks>
+</Services>
+```
 
 ### The `Service` element
 
@@ -143,17 +144,21 @@ The rest of this section assumes you are using jQuery client-side and proposes a
 
 To invoke a service from Javascript you can pre-fill server-side your **(X)HTML** page with a *data island* containing the service invocation envelope (see below *Implementation of the service procotol*) with the optional authorization token. You can call the *services:gen-envelope-for(service, endpoint, payload)* method to generate this XML message for you (including the optional authorization token) pre-filled with your XML data bound to a payload variable. For instance your Oppidum model can create a data island model data as this :
 
-    <DataIsland Id="my-ajax-template">
-      { services:gen-envelope-for('service name', 'endpoint name', $payload }
-    </DataIsland>
+```xml
+<DataIsland Id="my-ajax-template">
+  { services:gen-envelope-for('service name', 'endpoint name', $payload }
+</DataIsland>
+```
 
 data island which can be embedded in a page using this XSLT template : 
 
-    <xsl:template match="DataIsland">
-      <script id="{@Id}" type="application/xml" style="display:none">
-        <xsl:copy-of select="*"/>
-      </script>
-    </xsl:template> 
+```xml
+<xsl:template match="DataIsland">
+  <script id="{@Id}" type="application/xml" style="display:none">
+    <xsl:copy-of select="*"/>
+  </script>
+</xsl:template> 
+```
     
 Then in javascript you just just need to retrieve your data island content as text (with _$('#my-ajax-template").text()_) and post it with the $.ajax jQuery method, for instance with :
 
@@ -185,10 +190,12 @@ Of course you are free to use other means to create the service invocation reque
 
 The XML payload is wrapped into an XML envelope with the following structure :
 
-    <Service>
-      <AuthorizationToken>REPLACE-WITH-YOUR-TOKEN</AuthorizationToken>
-      <Payload><REPLACE-WITH-YOUR-PAYLOAD-CONTENT/></Payload>
-    </Service>
+```xml
+<Service>
+  <AuthorizationToken>REPLACE-WITH-YOUR-TOKEN</AuthorizationToken>
+  <Payload><REPLACE-WITH-YOUR-PAYLOAD-CONTENT/></Payload>
+</Service>
+```
 
 The authorization token is the token configured for the service endpoint in the Providers section of the service producer and in the Consumers section of the service consumer.
 
