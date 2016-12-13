@@ -30,8 +30,33 @@ The `acc-drawer` command manages opening and closing of a drawer inside a docume
 ## The `augment` command
 
 > In: lib/extensions.js
+>
+> Implements: Augment in supergrid.xsl
 
-NOT USED
+The `augment` command opens a target modal window editor to edit an entity corresponding to the current value of a target field, or to edit and create a new entity and add it to the target field.
+
+The target field is usually a selection list implemented by a compatible plugin, typically a `choice` plugin with or without a `select2` filter.
+
+Mandatory atributes : 
+
+* `data-augment-field` : CSS selector matching target field
+* `data-augment-root` : CSS selector to scope data-augment-field search
+* `data-target` : identifier target modal window editor
+* `data-augment-mode`: create or update mode configuration
+* `data-create-src` or `data-update-src` : URL of the controller where to POST new data to create an entity or where to GET and POST the existing entity data to update
+
+Optional atributes : 
+* `data-augment-noref` : warning to display when the target field is empty
+
+Example :
+
+```html
+<button type="button" class="btn span3 btn-small btn-primary" 
+  data-command="augment" data-target="case-enterprise"
+  data-augment-field=".x-EnterpriseRef" data-augment-root=".x-ClientEnterprise" data-update-src="/exist/projects/scaffold/enterprises/$_.xml?goal=update" 
+  data-augment-mode="update" 
+  data-augment-noref="The activity does not contain any customer company">Edit company data</button>
+```
 
 ## The `autoexec` command
 
@@ -40,6 +65,7 @@ NOT USED
 > Implements: AutoExec from application.xml in workflow.xsl
 
 The `autoexec` command triggers a target command with an optional event target. This command is meant to be triggered server-side through a `forward` element in Ajax response. 
+
 
 ## The `confirm` command
 

@@ -387,7 +387,7 @@ A current limitation is that a key should not be contained inside another key. I
 
 The `Add` element opens a modal editor window for editing a satellite document or creating a document (e.g. an e-mail message) 
 
-Mandatory attributes : 
+Mandatory attributes :
 
 * `@TargetEditor` specifies the `@Id` attribute of a modal editor window that can be created with a `Modal` element (see above);
 * `@Template` and `@Resource` attributes specify the address of the template and of the resource to dynamically load inside the modal editor window. They can use the URL micro-syntax (see above).
@@ -422,10 +422,51 @@ that will open the following modal editor
 
 ### The `Augment` element
 
-The `Augment` element opens a modal editor window for editing a transclusion part of a document.
+The `Augment` element augments a selection list field with the ability to open a modal window for either editing an entity corresponding to the current value of the field or to dynamically create and insert a new entity into the list.
 
-*To be explained*
+Once saving the entity the command will upate the selection list by adding the option if a new entity has been created. It will also simulate a user's selection on the list so that it triggers potential attached filters. This can be used with the `autofill` filter to dynamically insert the entity data inside the document to realize a form of transclusion (live copy) editing.
 
+The `Augment` command is compatible with the `choice` plugin and with the `select2` filter.
+
+Mandatory attributes :
+
+* `@Mode` : when set to *upate* the command is used to edit the current selection, when set to *create* it is used to create new entities; note that it can also switch the title of a shared target modal editor by selecting the `Title` element with the same mode attribute
+* `@TargetEditor` : id of the target modal editor window
+* `@TargetRoot` : CSS selector of an HTML element to scope the search for the field to augment with `@TargetField`
+* `@TargetField` : CSS selector of the field to augment
+* `@Controller` : URL of the controller to use in the target modal editor window, this URL is set as the `data-src` attribute of the editor, if the mode is *update* the corresponding resource is loading into the editor first, the URL can use the `$_` variable that will be replaced with the target field current value
+
+Example :
+
+The command 
+
+```xml
+<Augment Key="btn.create" Mode="create" 
+  TargetEditor="case-enterprise" Controller="/enterprises/add" 
+  TargetField=".x-EnterpriseRef" TargetRoot=".x-ClientEnterprise"/>
+```
+
+is attached to the following button
+
+```xml
+<Button Key="btn.create" W="3" Class="btn-small btn-primary"
+   loc="action.create.enterprise">Create a new enterprise</Button>
+```
+to augment the following selection list (*implementation generated in a form.xql template model*)
+
+```xml
+<Field Class="x-EnterpriseRef" Key="enterprise" Tag="EnterpriseRef" W="6" Gap="1"
+  loc="term.name" Placeholder-loc="content.choose">Nom</Field>
+```
+
+using the following modal editor
+
+```xml
+<Modal Id="case-enterprise" Width="620px" Template="templates/enterprise">
+  <Title Mode="create" loc="enterprise.create.title">Création d'une entreprise</Title>
+  <Title Mode="update" loc="enterprise.update.title">Modification d'une entreprise</Title>
+</Modal>
+```
 
 ### The `Open` element
 
