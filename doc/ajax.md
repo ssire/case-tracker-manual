@@ -70,16 +70,128 @@ Oppidum success / error protocol is implemented server-side with `oppidum:throw-
 
 You are encouraged to extend Oppidum success / error protocol by adding more action elements to the response vocabulary. This way you can create custom protocols.
 
-## Ajax JSON table protocol
+## Ajax table protocols
 
-The JSON table protocol interprets the payload element as an array of rows to display in a table. The Table key identifies the target table. The Action key specifies how to update the rows, either replacing the existing one (*create* value) or adding to the existing one (*update* value). Finally the rows are available in a Users hash key that contains an array. Each row is a hash entry, usually there is one key by column (but they may be more). The hash is interpreted by the Javascript encoding function from which the table command has been built (see the `$axel.command.makeTableCommand` table factory).
+A generic user interface for editing list of items (e.g. user's accounts) is to present them in a table, a row representing one item. Each column represent one item property. From this design it is possible to edit item properties individually or collectively, for instance using a click on a property to open a model editor window.
+
+Then the table must react to changes to the items :
+
+- creation of new items
+- updating of existing items
+
+Over the time we have used different Ajax protocols to update the table which are described below.
+
+### Ajax redirection protocol
+
+> In: lib/search.js (implements Add person functionality)
+
+This protocol redirects the browser to a page showing the new item. Thus it does not require to dynamically insert a new row in the table.
+
+By convention the client should issue the POST item creation request with a *next* query property set to *redirect* to activate that protocol.
+
+Example server-side implementation :
+
+```xml
+ajax:report-success-redirect('ACTION-CREATE-SUCCESS', (), concat($cmd/@base-url, $cmd/@trail, '?preview=', $newkey))
+```
+
+In this example the browser is redirected to the same page but with a *preview* query parameter containing the key of the new resource. Since it is called from a search page with a table showing the results list the effect is to prefill the results list with the new item.
+
+### Ajax HTML table protocol
+
+> In: lib/search.js (implements updating of a person functionality)
+>
+> NOTE: DEPRECATED
+
+This protocol returns an HTML representation of the new table row. The client-side code must then replace the legacy row with the new one.
+
+The server side implementation is usually a pipeline with an XSLT view, sometimes called *ajax.xsl* per convention.
+
+The client side implementation can be done with the generic function below :
+
+```javascript
+// Updates a single result table row from the XHR responseXML returned when updating an item
+function updateRow(xhr) {
+  var buffer = $axel.oppidum.unmarshalPayload(xhr),
+      m = buffer.match(/data-id="(-?\d+)"/),
+      dest, skip;
+  if (m) {
+    dest = $('tr[data-id="' + m[1] + '"]');
+    skip = parseInt(dest.children('td[rowspan]').attr('rowspan'));
+    if (!isNaN(skip)) {
+      while (--skip > 0) {
+        dest.next('tr').remove();
+      }
+    }
+    dest.replaceWith(buffer);
+  }
+}
+```
+
+The function above supposes each HTML *tr* row element holds a unique *data-id* attribute which must be present in the request result.
+
+### Ajax XML table protocol
+
+> In: lib/management.js
+>
+> NOTE: DEPRECATED
+
+This protocol returns an XML representation of the new table row or of the table row to replace.
+
+For ease of use it is recommended that the responseXML is a simple flat fragment containing data in first level children elements which is simple to parse with jQuery. One of these elements must contain a unique key to locate each item row. In the following examples this is done with the *Value* (XML fragment) and *data-remote* pair (descendant of the host *tr* element) but you can use any names.
+
+The client side implementation for new item creation can be done with a function similar to the function below :
+
+```javascript
+  function reportRemoteCreate(responseXML) {
+    var id = $('Value', responseXML).text(),
+        label = $('Name', responseXML).text(),
+        contact = $('Contact', responseXML).text()
+        realm = $('Realm', responseXML).text()
+    $('table[name="users"]').find('tbody > tr:first').before('<tr><td><span class="fn">'+ contact +'</span></td><td>'+ realm +'</td><td><a><span class="rn" data-remote="profiles?key=' + contact + '">'+label+'</span></a></td></tr>');
+  }
+```
+
+The function simply unmarshalls all the properties from the responseXML fragment and creates a new HTML table row definition that it inserts at the begining of the table.
+
+The client side implementation for item updating can be done with a function similar to the function below :
+
+```javascript
+function reportRemoteUpdate(responseXML) {
+  var id = $('Value', responseXML).text(),
+      label = $('Name', responseXML).text(),
+      contact = $('Contact', responseXML).text()
+      realm = $('Realm', responseXML).text()
+  $("span[data-remote$='" + id + "']").parents('tr').children('td:eq(0)').text(contact)
+  $("span[data-remote$='" + id + "']").parents('tr').children('td:eq(1)').text(realm)
+  $("span[data-remote$='" + id + "']").text(label).attr('data-remote', 'profiles?key=' + contact);
+}
+```
+
+You must write one function per type of item and per table, since the function manually unmarshal the different properties required to regenerate the table row.
+
+### Ajax JSON table protocol
+
+> Implemented by: $axel.command.makeTableCommand (in lib/commons.js)
+>
+> NOTE: preferred method
+
+This protocol uses an *Ajax JSON Oppidum success / error* enveloppe as described above, into which it copies a specific payload content.
+
+The `payload` entry contains predefined elements : 
+
+- the `Table` property identifies the target table. 
+- the `Action` property specifies how to update the rows, either replacing the existing one (*create* value) or adding to the existing one (*update* value). 
+- the rows are available in a `Users` hash property that contains an array. Each row is a hash entry, usually there is one key by column (but they may be more). The hash is interpreted by the Javascript encoding function from which the table command has been built (see the `$axel.command.makeTableCommand` table factory).
 
 Exempe success response (JSON hash) :
 
-    payload :
-      Table : table name
-      Action : create, update
-      Users : [ array of users rows ]
+```javascript
+payload :
+  Table : table name
+  Action : create, update
+  Users : [ array of users rows ]
+```
 
 *NOTE*: rows are stored in a *Users* array, this will most probably renamed *Rows* in the future as the table factory component is still under development
 

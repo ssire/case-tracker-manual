@@ -352,7 +352,7 @@ Mandatory attributes :
 
 Optional attributes : 
 
-* `@Template` generates a *data-template* attribute to configure the _transform_ command generated on the body. (TODO: explain when template is loaded). It can use the URL micro-syntax (see above);
+* `@Template` generates a *data-template* attribute to configure the _transform_ command generated on the body. (TODO: explain when template is loaded).
 * `@EventTarget` generates a *data-event-target* attribute to tell the save command to duplicate events on the corresponding element; 
 * `@AppenderId` generates a *data-replace-type="event append"* and a *data-replace-target* attribute equal to its text content;
 * `@PrependerId` generates a *data-replace-type="event prepend"* and a *data-replace-target* attribute equal to its text content;
@@ -371,6 +371,20 @@ Example :
 <Modal Id="c-entity-assignment" Width="700px" EventTarget="c-editor-case-init">
   <Title>EEN Managing Entity Assignment</Title>
 </Modal>
+```
+
+#### Current limitation
+
+The @Template does not implement yet the URL micro-syntax, instead it is implemented as :
+
+```xml
+<xsl:template match="@Template" mode="modal">
+  <xsl:attribute name="data-template"><xsl:value-of select="$xslt.base-url"/><xsl:value-of select="."/></xsl:attribute>
+</xsl:template>
+
+<xsl:template match="@Template[starts-with(.,'^')]" mode="modal">
+  <xsl:attribute name="data-template"><xsl:value-of select="."/></xsl:attribute>
+</xsl:template>
 ```
 
 ## The `Commands` section
@@ -466,6 +480,15 @@ using the following modal editor
   <Title Mode="create" loc="enterprise.create.title">Création d'une entreprise</Title>
   <Title Mode="update" loc="enterprise.update.title">Modification d'une entreprise</Title>
 </Modal>
+```
+
+
+#### Current limitation
+
+The `@Controller` URL is concatenated at formular deployment time with the base URL from the Oppidum command :
+
+```xml
+<xsl:attribute name="data-{@Mode}-src"><xsl:value-of select="concat($xslt.base-url, @Controller)"/></xsl:attribute>
 ```
 
 ### The `Open` element

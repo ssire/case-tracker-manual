@@ -57,7 +57,6 @@ Example :
   data-augment-mode="update" 
   data-augment-noref="The activity does not contain any customer company">Edit company data</button>
 ```
-
 ## The `autoexec` command
 
 > In: lib/workflow.js
@@ -157,6 +156,12 @@ Optional attributes :
 * `data-event-target` secondary editor to listen to
 * `data-counter` id of a counter to update (text content) with the number of table rows
 
+## The `$axel.command.makeTableCommand` table factory
+
+> In: lib/commons.js
+
+The `$axel.command.makeTableCommand` is a command constructor function that creates and registers an AXEL command to manage rows of user data displayed inside a table. It also manages options to make each column sortable and filterable.
+
 ## The `open` command
 
 > In: lib/extensions.js
@@ -171,6 +176,16 @@ Mandatory attributes :
 
 * `data-form` is the id of the form element to submit
 * `data-src` is the URL to open, it will be set as the form *action* attribute before submitting
+
+## The `save` command
+
+> In: axel-forms.js (native AXEL-FORMS command)
+>
+> Implements: Save in widgets.xsl
+
+The 'save' command serializes the XML data contained inside a target editor and submit it with an AJAX POST request. By default it sends data with an `"application/xml; charset=UTF-8"` content type.
+
+See more info on [AXEL-FORMS wiki: the 'save' command](https://github.com/ssire/axel-forms/wiki/The-%27save%27-command)
 
 ## The `status` command
 
