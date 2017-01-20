@@ -26,6 +26,7 @@ The main Case Tracker components can be use to build case management application
 - [Glossary](./doc/glossary.md) :  Project's glossary
 - [Architecture](./doc/architecture.md) :  Architecture and conventions
 - [Ajax protocols](./doc/ajax.md) :  Ajax protocols
+- [Data model](./doc/data.md) : Data model
 
 **Server-side components**
 
