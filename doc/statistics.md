@@ -111,9 +111,9 @@ The document contain two main section:
 
 The `Filter` elements defines a statistics page with a search mask and a pre-configured result view area.
 
-The mandatory `@Page` attribute is the key used to associate the definition with the resource name in `modules/stats/stats.xql` that constructs the view.
+The mandatory `@Page` attribute is the key used to find the page definition in the controllers. It usually matches the Oppidum resource mapping of the page.
 
-The mandatory `Formular` element defines the search mask. The mandatory unique `Template` element contains the URL of the search mask formular to load. The `Command` elements define the available commands.
+The mandatory `Formular` element defines the search mask to load into the page. The `Template` element contains the URL of the formular to load. The `Command` elements define the available commands. There is usually one command to call the graph generation service, and zero or more commands to export tables in new windows.
 
 The `Charts` element defines one `Chart` element per chart to draw in the result view area.
 
