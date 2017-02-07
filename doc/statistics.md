@@ -59,7 +59,7 @@ The typical way to map the statistics module to REST resources to show statistic
   </item>
 ```
 
-And of course you MUST have mapped the [Supergrid formular generator](./doc/supergrid-use.md) too for generating the templates corresponding to your search masks.
+And of course you MUST have mapped the [Supergrid formular generator](./supergrid-use.md) too for generating the templates corresponding to your search masks.
 
 Note that fine grain access control can be declared in `stats.xml` using the statistics markup language, so Oppidum level access control is there only to block guest access.
 
