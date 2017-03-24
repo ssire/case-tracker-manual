@@ -142,18 +142,18 @@ Note that per Oppidum construction and per NGINX configuration the content of th
 
 The case tracker database follows the Oppidum framework conventions : 
 
-* user generated content is stored in the `/db/sites/cctracker` collection (**data space**)
+* user generated content is stored in the `/db/sites/cctracker` collection (**content space**)
 * application configuration is stored in the `/db/www/cctracker` collection (**configuration space**)
 
 There is one exception for the `/db/sites/cctracker/global-information` collection that contains also application configuration data. In particular it contains all the data types definitions which are used to generate user interface selector menus, hence they belong more to the data space than the configuration space.
 
-The data space is organized into the following main collections : 
+The content space is organized into the following main collections : 
 
 * `/db/sites/cctracker/persons` : all users data (including user profiles for authentification and role management)
   * actually it contains a single persons.xml file and an images collection with all users photos
 * `/db/sites/cctracker/cases` : all cases and activities
   * actually it is divided into YYYY/MM sub-collections where YYYY (resp. MM) is the case creation year (resp. month)
-* `/db/sites/cctracker/enterprises` : all enterprises data (depending on controllers implementation this may be only users enterprises and not cases enterprises which are stored directly within cases)
+* `/db/sites/cctracker/enterprises` : all enterprises data
 
 Some other collections may be used if you activate specific services : 
   

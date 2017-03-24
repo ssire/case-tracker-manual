@@ -59,15 +59,35 @@ The typical way to map the statistics module to REST resources to show statistic
   </item>
 ```
 
-And of course you MUST have mapped the [Supergrid formular generator](./supergrid-use.md) too for generating the templates corresponding to your search masks.
+You MUST also have mapped the [Supergrid formular generator](./supergrid-use.md) for generating the templates corresponding to your search masks, and each of your statistics criteria template such as the `/templates/stats-cases` example below :
+
+```xml
+  <item name="templates" collection="templates">
+    ...
+    <item name="stats-cases" epilogue="stats-cases.xhtml">
+      <model src="modules/stats/form.xql"/>
+    </item>
+  </item>
+```
+
+Finally for Supergrid to generate the *stats-cases* template above you MUST register the corresponding statistics formular into the `formulars/_register.xml` file too :
+
+```xml
+  <Formulars>
+    <Formular>
+      <Name>Cases statistics</Name>
+      <Form>forms/stats-cases</Form>
+    </Formular>
+  </Formulars>
+```
 
 Note that fine grain access control can be declared in `stats.xml` using the statistics markup language, so Oppidum level access control is there only to block guest access.
 
-This defines 3 resources with their corresponding pipelines :
+The REST mapping defines 3 resources with their corresponding pipelines :
 
-* the `GET stats/cases` pipeline generates the statistics page that must contain the pre-generated graph micro-format instructions for each graph and include the Javascript client-side part of the graph generation service 
-* the `POST stats/filter` pipeline is the server-side part of the graph generation service, it returns a JSON data set
-* the `POST stats/export` pipeline is the table exportation service, it returns an HTML page with tables
+* `GET stats/cases` : creates the statistics page for querying and plotting a data set (note that it contains micro-format instructions to configure each graph and it includes the Javascript client-side part of the graph generation service)
+* `POST stats/filter` : is the server-side part of the graph generation service, it returns a JSON data set
+* `POST stats/export` : is the table exportation service, it returns an HTML page with tables
 
 Both the graph generation and the table exportation services take XML submitted data as input. The submitted root element tag name serves as a key to identify the type of data set (e.g. Cases or Activities or KPI).
 
