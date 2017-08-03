@@ -352,7 +352,7 @@ Mandatory attributes :
 
 Optional attributes : 
 
-* `@Template` generates a *data-template* attribute to configure the _transform_ command generated on the body. (TODO: explain when template is loaded).
+* `@Template` generates a *data-template* attribute to configure the _transform_ command generated on the body. (TODO: explain when template is loaded). In the current version the value of the template attribute is concatenated after the base URL, hence it must be declared as an absolute path starting at the application mapping root (e.g. `/templates/person`)
 * `@EventTarget` generates a *data-event-target* attribute to tell the save command to duplicate events on the corresponding element; 
 * `@AppenderId` generates a *data-replace-type="event append"* and a *data-replace-target* attribute equal to its text content;
 * `@PrependerId` generates a *data-replace-type="event prepend"* and a *data-replace-target* attribute equal to its text content;

@@ -26,11 +26,13 @@ The main Case Tracker components can be use to build case management application
 - [Glossary](./doc/glossary.md) :  Project's glossary
 - [Architecture](./doc/architecture.md) :  Architecture and conventions
 - [Ajax protocols](./doc/ajax.md) :  Ajax protocols
+- [Conventions](./doc/conventions.md) : Code and data model conventions
 - [Data model](./doc/data.md) : Data model
 
 **Server-side components**
 
 - [Workflow](./doc/workflow.md) : user-driven and data-driven workflows
+- Access Control : access control rules
 - Data types : application data types to generate input selectors
 - Supergrid grid-base form generator
   - [Installation and use](./doc/supergrid-use.md)
