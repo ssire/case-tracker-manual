@@ -33,7 +33,10 @@ This rules is implied when you called the *display:gen-name-for* and *misc:unref
 Known exceptions : 
 
 * tag name `Country` refers to the `Countries` selector data type
-* `CurrentStatusRef`, `PreviousStatusRef` are used to encode workflow status
+* in `StatusHistory` data type 
+  * `CurrentStatusRef`, `PreviousStatusRef` are used to encode workflow status
+  * `ValueRef` encode a workflow status independently of the selector data type reprensenting the workflow status (e.g. `CaseWorkflowStatus`, `ActivityWorkflowStatus`)
+
 
 ### Tag name ending with Key
 
@@ -45,15 +48,31 @@ The tag name of the dereferenced entity is derived from the tag name by removing
 
 This way you can use the *globals:collection* function to access the given resource such as in `globals:collection('enterprises-uri')//Enterprise[Id eq $key]`.
 
-### Tag name not ending with Ref or Key
+### Tag name always associated with a data type
+
+Some tag names are always used to represent content with a similar data type.
+
+#### Comment/s tag name
+
+The `Comment` tag name (or `Comments` tag name) always represent user generated textual comments :
+
+- the singular form `Comment` represents a single line of text, text is directly stored inside the `Comment` element
+- the plural form `Comments` represent either :
+  * multiple lines text entries, each entry is contained in a `Text` element
+  * rich text content composed of multiple text entries, each entry is either a `Parag`, a `List` or a `Title` element
+
+The nature of the `Comment` may be encoded into the data model either :
+
+* using a more specific tag name ending with `Comment` (or `Comments`) such as in `ResponsibleCoachComment` or `PositiveComments`
+* by storing the `Comment` (or `Comments`) element inside a more specific container element (e.g. a `Comments` inside a `Challenge` element; a `Comments` inside a `Dissemination` element)
+
+The second method is a powerful modelling trick since it is then possible to complete the comments with some ratings, such as a `RatingScaleRef` element for instance.
+
+### Other tag names not ending with Ref or Key
 
 All the other tag names represent complex data types or terminal data types.
 
 There is no specific convention to devise the corresponding data types from the tag name.
 
 The only convention is that a repeatable data type should be named with a plural form (e.g. `Activities`, `Alerts`, `Tasks`). Whenever possible the repeated content should be named using the singular form (e.g. `Task` repeated inside `Tasks`).
-
-Known exceptions :
-
-* the `Comments` tag name contains a repetition of `Text` string elements (or of `Parag` elements in case of rich text content)
 
