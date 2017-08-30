@@ -193,9 +193,44 @@ See more info on [AXEL-FORMS wiki: the 'save' command](https://github.com/ssire/
 >
 > Implements: ChangeStatus (in Actions in Document) in workflow.xsl
 
-The `status` command POST a change status request to the case tracker.
+The `status` command POST a change status request to the case tracker and usually redirects to a new page upon success.
 
-This command should be hosted on an HTML list element with specific parameters set on each list item. Each list item triggers a different change status request.
+The basic use of the command is to link it with a target editor in a hiden modal window : it will open the modal window upon success and load a template with optional initial data inside. The modal window can contain an e-mail composer window for instance and should contain its own command to save its content and close the window or redirect to a new page after saving.
+
+Note that when the status change Ajax `success` response contains a `done` element it will prevent the opening of the modal window and it will directly redirect the browser as explained in the next paragraph.
+
+The status change Ajax response must contain a *Location* header which is stored by the command while displaying the modal window. In case the target editor in the modal window triggers an *axel-cancel-edit* event or in case the modal window is closed, the status change command will redirect to the stored address. Usually the same redirection address should be returned by the Ajax response to the save command used by the target editor in the modal window to achieve the same redirection upon success.
+
+You can also use the status command without a hidden modal window (no *data-target-modal* attribute). The status command will then immediately redirect the browser to the address returned by the Ajax *Location* header upon success. 
+
+Note that in that later case you must anyway define a target editor, but it will not be used by the command. The rule of thumb is to use the editor associated with the menu where you place the status command. 
+
+This command should be hosted on an HTML list element with specific parameters set on each list item. Each list item triggers a different change status request. It can also be hosted on a single HTML button when the list is reduced to one item (e.g. a *Submit* button to submit a previously edited formular form application).
+
+Mandatory attributes :
+
+* `data-target` is an editor embedded in a modal window (identifier with `data-target-modal`) or a neutral editor (unused by the command)
+* `data-action` status change direction (increment or decrement)
+* `data-argument` increment (or decrement) number
+* `data-status-from` current status number from where to apply the change
+
+Optional attributes :
+
+* `data-confirm` text of a confirmation message to display before changing status
+* `data-target-modal` identifier of the modal window containing the target editor
+* `data-with-template` (mandatory with data-target-modal) template to load in the target editor of the target modal window
+* `data-init` resource to load to initialize the target editor of the target modal window
+
+```html
+<button class="btn btn-primary" 
+  data-command="status c-inhibit" 
+  data-target="c-editor-event-form-apply-8" 
+  data-status-from="1" 
+  data-status-ctrl="8/status" 
+  data-confirm="Are you sure you want to submit your application ? All fields marked as mandatory must be filled otherwise you won't be able to submit. Once you have submitted you can no longer edit the application form." 
+  data-action="increment" 
+  data-argument="1">Submit</button>
+```
 
 ## The `view` command
 
