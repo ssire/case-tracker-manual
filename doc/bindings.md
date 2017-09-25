@@ -7,7 +7,9 @@ Actually bindings are defined either in :
 * the *axel-forms.js* library embedded into XCM
 * the *extensions.js* (or DEPRECATED *workflow.js*) library embedded into XCM
 
-You can also implement your own bindings in any of your applicaiton javascript library files.
+You can also implement your own bindings in any of your application javascript library files.
+
+You can declare a binding using a specific xml tag in the Bindings section od a Supergrid formular, or you can directly generate its micro-format attributes if you use XSLT views in your application to generate XTiger templates.
 
 NOTE: *the set of supported bindings and their vocabulary is still evolving*
 
